@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -34,16 +33,17 @@
         }
         
         header {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
             color: white;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         header h1 {
             margin: 0;
             font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
         
         .donation-display {
@@ -67,13 +67,14 @@
         .thermometer {
             width: 120px;
             height: 350px;
-            background-color: white;
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
             border-radius: 60px 60px 0 0;
             position: relative;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.5);
             overflow: hidden;
             border: 4px solid #ddd;
             border-bottom: none;
+            backdrop-filter: blur(5px);
         }
         
         .thermometer::before {
@@ -83,9 +84,10 @@
             left: 0;
             width: 100%;
             height: 120px;
-            background-color: #e55b13;
+            background: linear-gradient(to top, #f07c3e, #e55b13);
             border-radius: 50% 50% 0 0;
             transform: translateY(50%);
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .thermometer-fill {
@@ -94,9 +96,28 @@
             left: 0;
             width: 100%;
             height: 0%;
-            background-color: var(--secondary-color);
+            background: linear-gradient(to top, #e55b13, #f07c3e);
             transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 1;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .thermometer-bubbles {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            opacity: 0;
         }
         
         .thermometer-bulb {
@@ -106,10 +127,22 @@
             transform: translateX(-50%);
             width: 120px;
             height: 120px;
-            background-color: var(--secondary-color);
+            background: radial-gradient(circle at 70% 30%, #f07c3e 0%, #e55b13 70%);
             border-radius: 50%;
             z-index: 2;
             border: 4px solid #ddd;
+            box-shadow: inset 5px -5px 15px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .thermometer-shine {
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: rotate(-45deg);
         }
         
         .thermometer-markers {
@@ -138,29 +171,33 @@
         .marker-text {
             font-size: 16px;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
         }
         
         .total-amount {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
             color: var(--primary-color);
             margin: 20px 0;
             text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
         }
         
         .goal-text {
             font-size: 1.5rem;
             margin: 10px 0;
             text-align: center;
+            color: #555;
         }
         
         .recent-donations {
             margin: 40px auto;
             max-width: 600px;
             background-color: white;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
         .recent-donations h2 {
@@ -203,13 +240,14 @@
         }
         
         .test-controls {
-            background-color: #f8f9fa;
+            background-color: #fff;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 20px;
             margin: 20px auto;
             max-width: 500px;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .test-controls h3 {
@@ -218,32 +256,43 @@
         }
         
         .button {
-            background-color: var(--primary-color);
+            background: linear-gradient(to bottom, var(--primary-color), #005391);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s;
+            font-weight: bold;
+            transition: all 0.3s;
             margin: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .button:hover {
-            background-color: #004e8c;
+            background: linear-gradient(to bottom, #0075c9, #0069b4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .amount-input {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 30px;
             font-size: 1rem;
             width: 100px;
             margin: 5px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         footer {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
             color: white;
             text-align: center;
             padding: 20px 0;
@@ -271,6 +320,51 @@
             height: 10px;
             background-color: #f00;
             opacity: 0;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            z-index: 9998;
+            pointer-events: none;
+        }
+        
+        .goal-reached-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .goal-reached-overlay.show {
+            opacity: 1;
+        }
+        
+        .goal-reached-message {
+            font-size: 4rem;
+            color: white;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
         
         .new-donation-popup {
@@ -346,6 +440,12 @@
 </head>
 <body>
     <div class="confetti-container" id="confetti-container"></div>
+    <div class="fireworks-container" id="fireworks-container"></div>
+    
+    <div class="goal-reached-overlay" id="goal-reached-overlay">
+        <div class="goal-reached-message">DOEL BEREIKT! €4000</div>
+        <button id="close-overlay" class="button">Geweldig! 🎉</button>
+    </div>
     
     <div class="new-donation-popup" id="donation-popup">
         <div class="popup-icon">€</div>
@@ -368,8 +468,11 @@
             <div class="thermometer-container">
                 <div class="thermometer">
                     <div class="thermometer-fill" id="thermometer-fill"></div>
+                    <div class="thermometer-bubbles" id="thermometer-bubbles"></div>
                 </div>
-                <div class="thermometer-bulb"></div>
+                <div class="thermometer-bulb">
+                    <div class="thermometer-shine"></div>
+                </div>
                 
                 <div class="thermometer-markers">
                     <div class="marker">
@@ -421,12 +524,13 @@
         let currentAmount = 0;
         const goalAmount = 4000;
         let donations = [];
-        // No need for demo names anymore
+        let goalReached = false;
         
         // Elements
         const currentAmountEl = document.getElementById('current-amount');
         const goalAmountEl = document.getElementById('goal-amount');
         const thermometerFill = document.getElementById('thermometer-fill');
+        const thermometerBubbles = document.getElementById('thermometer-bubbles');
         const donationList = document.getElementById('donation-list');
         const addDonationBtn = document.getElementById('add-donation');
         const resetBtn = document.getElementById('reset');
@@ -434,10 +538,14 @@
         const donationPopup = document.getElementById('donation-popup');
         const popupMessage = document.getElementById('popup-message');
         const confettiContainer = document.getElementById('confetti-container');
+        const fireworksContainer = document.getElementById('fireworks-container');
+        const goalReachedOverlay = document.getElementById('goal-reached-overlay');
+        const closeOverlayBtn = document.getElementById('close-overlay');
         
         // Initialize
         updateThermometer();
         goalAmountEl.textContent = goalAmount.toLocaleString('nl-NL');
+        createBubbles();
         
         // Event listeners
         addDonationBtn.addEventListener('click', function() {
@@ -448,8 +556,13 @@
         resetBtn.addEventListener('click', function() {
             currentAmount = 0;
             donations = [];
+            goalReached = false;
             updateThermometer();
             updateDonationList();
+        });
+        
+        closeOverlayBtn.addEventListener('click', function() {
+            goalReachedOverlay.classList.remove('show');
         });
         
         // Functions
@@ -466,17 +579,43 @@
                 donations.pop();
             }
             
+            const previousAmount = currentAmount;
             currentAmount += amount;
             updateThermometer();
             updateDonationList();
             showPopup(donation);
-            createConfetti(amount);
+            
+            // Determine celebration level based on donation amount
+            if (amount < 50) {
+                createConfetti(amount);
+            } else if (amount < 200) {
+                createConfetti(amount);
+                createFireworks(amount, false);
+            } else {
+                createConfetti(amount * 1.5);
+                createFireworks(amount, true);
+            }
+            
+            // Check if goal was just reached
+            if (!goalReached && previousAmount < goalAmount && currentAmount >= goalAmount) {
+                goalReached = true;
+                celebrateGoalReached();
+            }
         }
         
         function updateThermometer() {
             currentAmountEl.textContent = currentAmount.toLocaleString('nl-NL');
             const percentage = Math.min(currentAmount / goalAmount * 100, 100);
             thermometerFill.style.height = percentage + '%';
+            
+            // Scale and pulse effect for large donations
+            if (percentage >= 100) {
+                document.querySelector('.total-amount').style.color = '#28a745';
+                document.querySelector('.total-amount').style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    document.querySelector('.total-amount').style.transform = 'scale(1)';
+                }, 2000);
+            }
         }
         
         function updateDonationList() {
@@ -522,9 +661,58 @@
             }, 5000);
         }
         
+        function createBubbles() {
+            for (let i = 0; i < 10; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // Position at the bottom
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.bottom = '0';
+                
+                thermometerBubbles.appendChild(bubble);
+                
+                // Animate the bubble rising
+                animateBubble(bubble);
+            }
+        }
+        
+        function animateBubble(bubble) {
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 2;
+            
+            setTimeout(() => {
+                // Set initial position
+                bubble.style.bottom = '0';
+                bubble.style.opacity = '0.7';
+                
+                // Create animation
+                bubble.animate([
+                    { bottom: '0', opacity: 0.7 },
+                    { bottom: '100%', opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'ease-out'
+                });
+                
+                // After animation completes, restart
+                setTimeout(() => {
+                    bubble.style.left = `${Math.random() * 100}%`;
+                    bubble.style.opacity = '0';
+                    animateBubble(bubble);
+                }, duration * 1000);
+                
+            }, delay * 1000);
+        }
+        
         function createConfetti(amount) {
             // Number of confetti pieces based on donation amount
-            const pieceCount = Math.min(Math.max(amount / 5, 20), 100);
+            const pieceCount = Math.min(Math.max(amount, 30), 200);
             
             for (let i = 0; i < pieceCount; i++) {
                 const confetti = document.createElement('div');
@@ -532,13 +720,17 @@
                 
                 // Random position
                 const x = Math.random() * window.innerWidth;
-                const y = -20;
+                const y = -30;
                 
                 // Random size
-                const size = Math.random() * 10 + 5;
+                const size = Math.random() * 12 + 5;
+                
+                // Random shape
+                const shapes = ['square', 'circle', 'triangle'];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
                 
                 // Random color
-                const colors = ['#e55b13', '#0069b4', '#28a745', '#ffc107', '#dc3545', '#6610f2'];
+                const colors = ['#e55b13', '#0069b4', '#28a745', '#ffc107', '#dc3545', '#6610f2', '#fd7e14', '#20c997'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 
                 // Random rotation
@@ -548,6 +740,16 @@
                 confetti.style.width = `${size}px`;
                 confetti.style.height = `${size}px`;
                 confetti.style.backgroundColor = color;
+                
+                if (shape === 'circle') {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape === 'triangle') {
+                    confetti.style.backgroundColor = 'transparent';
+                    confetti.style.borderBottom = `${size}px solid ${color}`;
+                    confetti.style.borderLeft = `${size/2}px solid transparent`;
+                    confetti.style.borderRight = `${size/2}px solid transparent`;
+                }
+                
                 confetti.style.left = `${x}px`;
                 confetti.style.top = `${y}px`;
                 confetti.style.transform = `rotate(${rotation}deg)`;
@@ -558,13 +760,18 @@
                 const animationDuration = Math.random() * 3 + 2;
                 const fallDistance = window.innerHeight + 100;
                 
+                // Create a more natural swaying motion
+                const sidewaysMove = Math.random() * 200 - 100;
+                const rotations = Math.random() * 5 + 2;
+                
                 // Set a unique animation
                 confetti.animate([
                     { transform: `translate(0, 0) rotate(${rotation}deg)`, opacity: 1 },
-                    { transform: `translate(${Math.random() * 200 - 100}px, ${fallDistance}px) rotate(${rotation + 360 * 2}deg)`, opacity: 0 }
+                    { transform: `translate(${sidewaysMove/2}px, ${fallDistance/2}px) rotate(${rotation + 180 * rotations/2}deg)`, opacity: 0.8 },
+                    { transform: `translate(${sidewaysMove}px, ${fallDistance}px) rotate(${rotation + 360 * rotations}deg)`, opacity: 0 }
                 ], {
                     duration: animationDuration * 1000,
-                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+                    easing: 'cubic-bezier(0.15, 0.85, 0.45, 1)'
                 });
                 
                 // Remove after animation
@@ -572,6 +779,175 @@
                     confetti.remove();
                 }, animationDuration * 1000);
             }
+        }
+        
+        function createFireworks(amount, isLarge) {
+            const fireworkCount = isLarge ? Math.min(Math.max(amount / 20, 3), 10) : Math.min(Math.max(amount / 50, 1), 5);
+            
+            for (let i = 0; i < fireworkCount; i++) {
+                setTimeout(() => {
+                    launchFirework(isLarge);
+                }, i * 300);
+            }
+        }
+        
+        function launchFirework(isLarge) {
+            // Create the rocket
+            const rocket = document.createElement('div');
+            rocket.className = 'firework';
+            rocket.style.backgroundColor = '#fff';
+            rocket.style.width = '3px';
+            rocket.style.height = '10px';
+            
+            // Random position
+            const x = Math.random() * (window.innerWidth * 0.8) + (window.innerWidth * 0.1);
+            const rocketStartY = window.innerHeight;
+            const explosionY = Math.random() * (window.innerHeight * 0.5) + 100;
+            
+            rocket.style.left = `${x}px`;
+            rocket.style.top = `${rocketStartY}px`;
+            
+            // Add rocket to container
+            fireworksContainer.appendChild(rocket);
+            
+            // Rocket trail effect
+            const interval = setInterval(() => {
+                const trail = document.createElement('div');
+                trail.className = 'firework';
+                trail.style.width = '2px';
+                trail.style.height = '2px';
+                trail.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                trail.style.left = rocket.style.left;
+                trail.style.top = rocket.style.top;
+                fireworksContainer.appendChild(trail);
+                
+                // Fade out trail
+                setTimeout(() => {
+                    trail.style.opacity = '0';
+                    setTimeout(() => trail.remove(), 300);
+                }, 100);
+            }, 20);
+            
+            // Animate rocket
+            const rocketAnimation = rocket.animate([
+                { top: `${rocketStartY}px` },
+                { top: `${explosionY}px` }
+            ], {
+                duration: 1000,
+                easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+            });
+            
+            // Explode when rocket reaches the target position
+            rocketAnimation.onfinish = () => {
+                clearInterval(interval);
+                rocket.remove();
+                createExplosion(x, explosionY, isLarge);
+                
+                // Rocket sound
+                if (isLarge) {
+                    playSound('boom', 0.2);
+                }
+            };
+        }
+        
+        function createExplosion(x, y, isLarge) {
+            const particleCount = isLarge ? 120 : 60;
+            const explosionSize = isLarge ? 300 : 150;
+            
+            // Choose a random color theme for this explosion
+            const colorThemes = [
+                ['#ff0000', '#ff7700', '#ffff00'], // Red/Orange/Yellow
+                ['#00ff00', '#00ffaa', '#00ffff'], // Green/Teal/Cyan
+                ['#0000ff', '#5500ff', '#aa00ff'], // Blue/Indigo/Purple
+                ['#ff00ff', '#ff0077', '#ff0000'], // Magenta/Pink/Red
+                ['#ffff00', '#ffffff', '#88ff00'], // Yellow/White/Lime
+                ['#ffffff', '#ffaaaa', '#ffff00']  // White/Pink/Yellow
+            ];
+            
+            const colors = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                
+                // Random size for particles
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random color from the chosen theme
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                particle.style.boxShadow = `0 0 ${isLarge ? 10 : 5}px 1px ${color}`;
+                
+                // Position at explosion center
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                fireworksContainer.appendChild(particle);
+                
+                // Calculate random angle and distance
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * explosionSize;
+                const destX = x + Math.cos(angle) * distance;
+                const destY = y + Math.sin(angle) * distance;
+                
+                // Animate the particle
+                const duration = Math.random() * 1000 + 500;
+                particle.animate([
+                    { left: `${x}px`, top: `${y}px`, opacity: 1, transform: 'scale(1)' },
+                    { left: `${destX}px`, top: `${destY}px`, opacity: 0, transform: 'scale(0.1)' }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0, 0.55, 0.45, 1)'
+                });
+                
+                // Remove after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, duration);
+            }
+        }
+        
+        function celebrateGoalReached() {
+            // Show the overlay
+            goalReachedOverlay.classList.add('show');
+            
+            // Trigger massive fireworks
+            const bigCelebration = () => {
+                createConfetti(500);
+                
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        launchFirework(true);
+                    }, i * 200);
+                }
+            };
+            
+            // Initial celebration
+            bigCelebration();
+            
+            // Continue celebration every few seconds
+            let celebrationCount = 0;
+            const maxCelebrations = 3;
+            
+            const celebrationInterval = setInterval(() => {
+                celebrationCount++;
+                if (celebrationCount <= maxCelebrations) {
+                    bigCelebration();
+                } else {
+                    clearInterval(celebrationInterval);
+                }
+            }, 4000);
+            
+            // Play celebration sound
+            playSound('cheer', 0.3);
+        }
+        
+        function playSound(type, volume = 0.2) {
+            // This function is just a stub - you would need to implement actual sound 
+            // if you want sound effects. This requires adding audio files.
+            console.log(`Playing ${type} sound at volume ${volume}`);
         }
         
         // Add a few initial donations for demonstration

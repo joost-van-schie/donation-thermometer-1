@@ -1,15 +1,654 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donatiethermometer</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Woord & Daad Donatie Thermometer</title>
+    <style>
+        :root {
+            --primary-color: #0069b4;
+            --secondary-color: #e55b13;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --success-color: #28a745;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .donation-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 40px 0;
+        }
+        
+        .thermometer-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 40px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .thermometer {
+            width: 120px;
+            height: 350px;
+            background-color: white;
+            border-radius: 60px 60px 0 0;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 4px solid #ddd;
+            border-bottom: none;
+        }
+        
+        .thermometer::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background-color: #e55b13;
+            border-radius: 50% 50% 0 0;
+            transform: translateY(50%);
+        }
+        
+        .thermometer-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background-color: var(--secondary-color);
+            transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+        }
+        
+        .thermometer-bulb {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            z-index: 2;
+            border: 4px solid #ddd;
+        }
+        
+        .thermometer-markers {
+            position: absolute;
+            top: 0;
+            left: 150px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        
+        .marker {
+            display: flex;
+            align-items: center;
+        }
+        
+        .marker-line {
+            width: 20px;
+            height: 2px;
+            background-color: #666;
+            margin-right: 10px;
+        }
+        
+        .marker-text {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .total-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .goal-text {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .recent-donations {
+            margin: 40px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recent-donations h2 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .donation-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .donation-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .donation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .donation-amount {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+        
+        .donation-name {
+            color: var(--text-color);
+        }
+        
+        .donation-time {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .test-controls {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .test-controls h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background-color: #004e8c;
+        }
+        
+        .amount-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100px;
+            margin: 5px;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        .new-donation-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-left: 5px solid var(--success-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 15px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+        }
+        
+        .new-donation-popup.show {
+            transform: translateX(0);
+        }
+        
+        .popup-icon {
+            background-color: var(--success-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .popup-content {
+            flex-grow: 1;
+        }
+        
+        .popup-title {
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: var(--success-color);
+        }
+        
+        .popup-message {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .thermometer {
+                width: 80px;
+            }
+            
+            .thermometer-bulb {
+                width: 80px;
+                height: 80px;
+                bottom: -40px;
+            }
+            
+            .thermometer-markers {
+                left: 100px;
+            }
+            
+            .total-amount {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Donatiethermometer</h1>
-    <div id="thermometer"></div>
-    <div id="recent-donations"></div>
-    <script src="script.js"></script>
+    <div class="confetti-container" id="confetti-container"></div>
+    
+    <div class="new-donation-popup" id="donation-popup">
+        <div class="popup-icon">€</div>
+        <div class="popup-content">
+            <h4 class="popup-title">Nieuwe Donatie!</h4>
+            <p class="popup-message" id="popup-message">Iemand heeft zojuist €25 gedoneerd!</p>
+        </div>
+    </div>
+    
+    <header>
+        <h1>Woord & Daad Actie-avond</h1>
+        <p>5 april 2024</p>
+    </header>
+    
+    <div class="container">
+        <div class="donation-display">
+            <div class="total-amount">€<span id="current-amount">0</span></div>
+            <div class="goal-text">Ons doel: €<span id="goal-amount">4000</span></div>
+            
+            <div class="thermometer-container">
+                <div class="thermometer">
+                    <div class="thermometer-fill" id="thermometer-fill"></div>
+                </div>
+                <div class="thermometer-bulb"></div>
+                
+                <div class="thermometer-markers">
+                    <div class="marker">
+                        <div class="marker-line"></div>
+                        <div class="marker-text">€4000</div>
+                    </div>
+                    <div class="marker">
+                        <div class="marker-line"></div>
+                        <div class="marker-text">€3000</div>
+                    </div>
+                    <div class="marker">
+                        <div class="marker-line"></div>
+                        <div class="marker-text">€2000</div>
+                    </div>
+                    <div class="marker">
+                        <div class="marker-line"></div>
+                        <div class="marker-text">€1000</div>
+                    </div>
+                    <div class="marker">
+                        <div class="marker-line"></div>
+                        <div class="marker-text">€0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recent-donations">
+            <h2>Recente Donaties</h2>
+            <ul class="donation-list" id="donation-list">
+                <!-- Donation items will be added here -->
+            </ul>
+        </div>
+        
+        <div class="test-controls">
+            <h3>Test Controls</h3>
+            <p>Gebruik deze knoppen om de thermometer te testen</p>
+            <input type="number" id="donation-amount" class="amount-input" value="25" min="1" max="1000">
+            <button id="add-donation" class="button">Voeg donatie toe</button>
+            <button id="reset" class="button">Reset Thermometer</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
+    </footer>
+    
+    <script>
+        // Configuration
+        let currentAmount = 0;
+        const goalAmount = 4000;
+        let donations = [];
+        const demoNames = [
+            "Familie de Vries", "Jan Bakker", "Maria Jansen", "Familie Visser", 
+            "Petra de Jong", "Anonieme gever", "Fam. Huisman", "Karin van Dijk",
+            "Jaap de Boer", "Gezin Mulder", "Anoniem", "Dirk Smit", "Emma Groot",
+            "Tom van der Meer", "Laura Post", "Fam. Veldkamp", "Joost Bos"
+        ];
+        
+        // Elements
+        const currentAmountEl = document.getElementById('current-amount');
+        const goalAmountEl = document.getElementById('goal-amount');
+        const thermometerFill = document.getElementById('thermometer-fill');
+        const donationList = document.getElementById('donation-list');
+        const addDonationBtn = document.getElementById('add-donation');
+        const resetBtn = document.getElementById('reset');
+        const donationAmountInput = document.getElementById('donation-amount');
+        const donationPopup = document.getElementById('donation-popup');
+        const popupMessage = document.getElementById('popup-message');
+        const confettiContainer = document.getElementById('confetti-container');
+        
+        // Initialize
+        updateThermometer();
+        goalAmountEl.textContent = goalAmount.toLocaleString('nl-NL');
+        
+        // Event listeners
+        addDonationBtn.addEventListener('click', function() {
+            const amount = parseInt(donationAmountInput.value) || 25;
+            addDonation(amount);
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            currentAmount = 0;
+            donations = [];
+            updateThermometer();
+            updateDonationList();
+        });
+        
+        // Functions
+        function addDonation(amount) {
+            const donationName = demoNames[Math.floor(Math.random() * demoNames.length)];
+            const donation = {
+                name: donationName,
+                amount: amount,
+                time: new Date().toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            donations.unshift(donation);
+            if (donations.length > 10) {
+                donations.pop();
+            }
+            
+            currentAmount += amount;
+            updateThermometer();
+            updateDonationList();
+            showPopup(donation);
+            createConfetti(amount);
+        }
+        
+        function updateThermometer() {
+            currentAmountEl.textContent = currentAmount.toLocaleString('nl-NL');
+            const percentage = Math.min(currentAmount / goalAmount * 100, 100);
+            thermometerFill.style.height = percentage + '%';
+        }
+        
+        function updateDonationList() {
+            donationList.innerHTML = '';
+            
+            if (donations.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'donation-item';
+                emptyItem.textContent = 'Nog geen donaties ontvangen';
+                donationList.appendChild(emptyItem);
+                return;
+            }
+            
+            donations.forEach(donation => {
+                const item = document.createElement('li');
+                item.className = 'donation-item';
+                
+                const donationInfo = document.createElement('div');
+                
+                const donationName = document.createElement('div');
+                donationName.className = 'donation-name';
+                donationName.textContent = donation.name;
+                
+                const donationTime = document.createElement('div');
+                donationTime.className = 'donation-time';
+                donationTime.textContent = donation.time;
+                
+                donationInfo.appendChild(donationName);
+                donationInfo.appendChild(donationTime);
+                
+                const donationAmount = document.createElement('div');
+                donationAmount.className = 'donation-amount';
+                donationAmount.textContent = '€' + donation.amount.toLocaleString('nl-NL');
+                
+                item.appendChild(donationInfo);
+                item.appendChild(donationAmount);
+                
+                donationList.appendChild(item);
+            });
+        }
+        
+        function showPopup(donation) {
+            popupMessage.textContent = `${donation.name} heeft zojuist €${donation.amount} gedoneerd!`;
+            donationPopup.classList.add('show');
+            
+            setTimeout(() => {
+                donationPopup.classList.remove('show');
+            }, 5000);
+        }
+        
+        function createConfetti(amount) {
+            // Number of confetti pieces based on donation amount
+            const pieceCount = Math.min(Math.max(amount / 5, 20), 100);
+            
+            for (let i = 0; i < pieceCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random position
+                const x = Math.random() * window.innerWidth;
+                const y = -20;
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                
+                // Random color
+                const colors = ['#e55b13', '#0069b4', '#28a745', '#ffc107', '#dc3545', '#6610f2'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random rotation
+                const rotation = Math.random() * 360;
+                
+                // Apply styles
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                confetti.style.transform = `rotate(${rotation}deg)`;
+                
+                confettiContainer.appendChild(confetti);
+                
+                // Animate
+                const animationDuration = Math.random() * 3 + 2;
+                const fallDistance = window.innerHeight + 100;
+                
+                // Set a unique animation
+                confetti.animate([
+                    { transform: `translate(0, 0) rotate(${rotation}deg)`, opacity: 1 },
+                    { transform: `translate(${Math.random() * 200 - 100}px, ${fallDistance}px) rotate(${rotation + 360 * 2}deg)`, opacity: 0 }
+                ], {
+                    duration: animationDuration * 1000,
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+                });
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, animationDuration * 1000);
+            }
+        }
+        
+        // Add a few initial donations for demonstration
+        setTimeout(() => {
+            addDonation(100);
+        }, 1000);
+        
+        setTimeout(() => {
+            addDonation(50);
+        }, 3000);
+        
+        setTimeout(() => {
+            addDonation(250);
+        }, 6000);
+        
+        // Simulated real-time updates for the demo
+        // In the real implementation, this would be replaced with
+        // polling the Gravity Forms API for new entries
+        function simulateRealTimeUpdates() {
+            const timeInterval = Math.random() * 30000 + 20000; // Random interval between 20-50 seconds
+            setTimeout(() => {
+                if (Math.random() > 0.3) { // 70% chance of a new donation
+                    const amount = Math.floor(Math.random() * 200) + 10; // Random amount between 10-209
+                    addDonation(amount);
+                }
+                simulateRealTimeUpdates();
+            }, timeInterval);
+        }
+        
+        simulateRealTimeUpdates();
+        
+        // In the real implementation, we would add code here to
+        // connect to the Gravity Forms REST API and fetch real donation data
+        // Example of how that could work:
+        /*
+        function fetchDonations() {
+            fetch('/wp-json/gf/v2/entries?form_ids[]=123', {
+                headers: {
+                    'Authorization': 'Basic ' + btoa('username:password')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Process new donations and update the thermometer
+                const newDonations = processNewDonations(data.entries);
+                if (newDonations.length > 0) {
+                    newDonations.forEach(donation => {
+                        addDonation(donation.amount, donation.name);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching donations:', error);
+            })
+            .finally(() => {
+                // Poll every 30 seconds
+                setTimeout(fetchDonations, 30000);
+            });
+        }
+        
+        // Start fetching donations
+        fetchDonations();
+        */
+    </script>
 </body>
 </html>

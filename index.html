@@ -197,11 +197,7 @@
             font-size: 1.2rem;
         }
         
-        .donation-name {
-            color: var(--text-color);
-        }
-        
-        .donation-time {
+        .donation-date {
             color: #777;
             font-size: 0.9rem;
         }
@@ -355,7 +351,7 @@
         <div class="popup-icon">€</div>
         <div class="popup-content">
             <h4 class="popup-title">Nieuwe Donatie!</h4>
-            <p class="popup-message" id="popup-message">Iemand heeft zojuist €25 gedoneerd!</p>
+            <p class="popup-message" id="popup-message">Er is zojuist €25 gedoneerd!</p>
         </div>
     </div>
     
@@ -425,12 +421,7 @@
         let currentAmount = 0;
         const goalAmount = 4000;
         let donations = [];
-        const demoNames = [
-            "Familie de Vries", "Jan Bakker", "Maria Jansen", "Familie Visser", 
-            "Petra de Jong", "Anonieme gever", "Fam. Huisman", "Karin van Dijk",
-            "Jaap de Boer", "Gezin Mulder", "Anoniem", "Dirk Smit", "Emma Groot",
-            "Tom van der Meer", "Laura Post", "Fam. Veldkamp", "Joost Bos"
-        ];
+        // No need for demo names anymore
         
         // Elements
         const currentAmountEl = document.getElementById('current-amount');
@@ -463,11 +454,11 @@
         
         // Functions
         function addDonation(amount) {
-            const donationName = demoNames[Math.floor(Math.random() * demoNames.length)];
+            const now = new Date();
             const donation = {
-                name: donationName,
                 amount: amount,
-                time: new Date().toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+                date: now.toLocaleDateString('nl-NL'),
+                time: now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
             };
             
             donations.unshift(donation);
@@ -505,16 +496,11 @@
                 
                 const donationInfo = document.createElement('div');
                 
-                const donationName = document.createElement('div');
-                donationName.className = 'donation-name';
-                donationName.textContent = donation.name;
+                const donationDate = document.createElement('div');
+                donationDate.className = 'donation-date';
+                donationDate.textContent = `${donation.date} ${donation.time}`;
                 
-                const donationTime = document.createElement('div');
-                donationTime.className = 'donation-time';
-                donationTime.textContent = donation.time;
-                
-                donationInfo.appendChild(donationName);
-                donationInfo.appendChild(donationTime);
+                donationInfo.appendChild(donationDate);
                 
                 const donationAmount = document.createElement('div');
                 donationAmount.className = 'donation-amount';
@@ -528,7 +514,7 @@
         }
         
         function showPopup(donation) {
-            popupMessage.textContent = `${donation.name} heeft zojuist €${donation.amount} gedoneerd!`;
+            popupMessage.textContent = `Er is zojuist €${donation.amount} gedoneerd!`;
             donationPopup.classList.add('show');
             
             setTimeout(() => {
@@ -602,8 +588,6 @@
         }, 6000);
         
         // Simulated real-time updates for the demo
-        // In the real implementation, this would be replaced with
-        // polling the Gravity Forms API for new entries
         function simulateRealTimeUpdates() {
             const timeInterval = Math.random() * 30000 + 20000; // Random interval between 20-50 seconds
             setTimeout(() => {
@@ -616,39 +600,6 @@
         }
         
         simulateRealTimeUpdates();
-        
-        // In the real implementation, we would add code here to
-        // connect to the Gravity Forms REST API and fetch real donation data
-        // Example of how that could work:
-        /*
-        function fetchDonations() {
-            fetch('/wp-json/gf/v2/entries?form_ids[]=123', {
-                headers: {
-                    'Authorization': 'Basic ' + btoa('username:password')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Process new donations and update the thermometer
-                const newDonations = processNewDonations(data.entries);
-                if (newDonations.length > 0) {
-                    newDonations.forEach(donation => {
-                        addDonation(donation.amount, donation.name);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching donations:', error);
-            })
-            .finally(() => {
-                // Poll every 30 seconds
-                setTimeout(fetchDonations, 30000);
-            });
-        }
-        
-        // Start fetching donations
-        fetchDonations();
-        */
     </script>
 </body>
 </html>

@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles that can't be easily replaced with Tailwind */
+.thermometer {
+    width: 120px;
+    height: 500px;
+    border-radius: 60px 60px 0 0;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid #ccc;
+    border-bottom: none;
+}
+
+.thermometer::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #e55b13;
+    transform: translateY(30px);
+    border-radius: 50% 50% 0 0;
+}
+
+.thermometer-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background-color: #e55b13;
+    transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+}
+
+.thermometer-bulb {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    background-color: #e55b13;
+    border-radius: 50%;
+    z-index: 2;
+    border: 3px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.thermometer-shine {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.page-container {
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    transform-origin: top left;
+}
+
+.donation-item {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.goal-reached-message {
+    animation: pulse 2s infinite;
+}
+
+.config-content.show {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Add styles for hiding config button */
+.config-toggle {
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+}
+
+.config-panel:hover .config-toggle {
+    opacity: 1;
+}

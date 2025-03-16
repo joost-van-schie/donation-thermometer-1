@@ -1097,42 +1097,43 @@
             refreshTimer = setInterval(fetchDonations, refreshInterval * 1000);
         }
         
-        function fetchDonations() {
-            if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey) {
-                console.error('API configuration incomplete');
-                return;
-            }
-            
-            // Create Authorization header
-            const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
-            
-            // Set up search parameters
-            const searchParams = new URLSearchParams({
-                'sorting[key]': 'id',
-                'sorting[direction]': 'DESC',
-                'paging[page_size]': 20
-            });
-            
-            fetch(`${apiConfig.baseUrl}/entries?${searchParams.toString()}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': auth,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                processApiDonations(data);
-            })
-            .catch(error => {
-                console.error('API Fetch Error:', error);
-            });
+function fetchDonations() {
+    if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
+        console.error('API configuration incomplete');
+        return;
+    }
+    
+    // Create Authorization header
+    const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
+    
+    // Set up search parameters
+    const searchParams = new URLSearchParams({
+        'sorting[key]': 'id',
+        'sorting[direction]': 'DESC',
+        'paging[page_size]': 20
+    });
+    
+    // Use the form-specific endpoint
+    fetch(`${apiConfig.baseUrl}/forms/${apiConfig.formId}/entries?${searchParams.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': auth,
+            'Content-Type': 'application/json'
         }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        processApiDonations(data);
+    })
+    .catch(error => {
+        console.error('API Fetch Error:', error);
+    });
+}
         
         function processApiDonations(entriesData) {
             if (!Array.isArray(entriesData)) {

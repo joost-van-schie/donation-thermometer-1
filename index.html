@@ -4,154 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Woord & Daad Donatie Thermometer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0069b4',
+                        secondary: '#e55b13',
+                        success: '#28a745',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary-color: #0069b4;
-            --secondary-color: #e55b13;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --success-color: #28a745;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            width: 1920px;
-            height: 1080px;
-        }
-        
-        .page-container {
-            width: 1920px;
-            height: 1080px;
-            position: relative;
-            overflow: hidden;
-            transform-origin: top left;
-        }
-        
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100% - 160px);
-        }
-        
-        header {
-            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        header h1 {
-            margin: 0;
-            font-size: 3.5rem;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        header p {
-            font-size: 1.8rem;
-            margin: 10px 0 0;
-        }
-        
-        .main-content {
-            display: flex;
-            flex-grow: 1;
-            margin-top: 30px;
-        }
-        
-        .donation-display {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .right-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            margin-left: 50px;
-        }
-        
-        .qr-section {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            flex: 1;
-        }
-        
-        .qr-section h2 {
-            color: var(--primary-color);
-            font-size: 2.4rem;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        
-        .qr-code {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 15px;
-            border: 10px solid var(--primary-color);
-            border-radius: 10px;
-        }
-        
-        .qr-caption {
-            margin-top: 20px;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-        }
-        
-        .total-amount {
-            font-size: 4.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 10px 0 20px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s ease;
-        }
-        
-        .goal-text {
-            font-size: 2rem;
-            margin: 0 0 30px;
-            text-align: center;
-            color: #555;
-        }
-        
-        .thermometer-container {
-            position: relative;
-            width: 250px;
-            height: 600px;
-            margin: 0 auto;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-        
+        /* Custom styles that can't be easily replaced with Tailwind */
         .thermometer {
             width: 120px;
             height: 500px;
-            background-color: #fff;
             border-radius: 60px 60px 0 0;
             position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             border: 3px solid #ccc;
             border-bottom: none;
@@ -204,187 +78,18 @@
             border-radius: 50%;
         }
         
-        .thermometer-markers {
-            position: absolute;
-            top: 0;
-            right: -140px;
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 10px 0;
-        }
-        
-        .marker {
-            display: flex;
-            align-items: center;
-        }
-        
-        .marker-line {
-            width: 20px;
-            height: 2px;
-            background-color: #666;
-            margin-right: 10px;
-        }
-        
-        .marker-text {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .recent-donations {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            flex: 2;
-        }
-        
-        .recent-donations h2 {
-            text-align: center;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 15px;
-            margin-top: 0;
-            font-size: 2.4rem;
-        }
-        
-        .donation-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 360px;
-            overflow-y: auto;
-        }
-        
-        .donation-item {
-            padding: 18px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.5s ease-in-out;
-            font-size: 1.3rem;
-        }
-        
-        .donation-item:last-child {
-            border-bottom: none;
-        }
-        
-        .donation-amount {
-            font-weight: bold;
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-        }
-        
-        .donation-date {
-            color: #777;
-            font-size: 1.1rem;
-        }
-        
-        .test-controls {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: auto;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .api-config {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            text-align: left;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .api-config h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 2rem;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        .config-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        
-        .test-controls h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 2rem;
-        }
-        
-        .button {
-            background: linear-gradient(to bottom, var(--primary-color), #005391);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.4rem;
-            font-weight: bold;
-            transition: all 0.3s;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .button:hover {
-            background: linear-gradient(to bottom, #0075c9, #0069b4);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        .button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .amount-input {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            font-size: 1.4rem;
-            width: 120px;
-            margin: 10px;
-            text-align: center;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        footer {
-            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 1.4rem;
-        }
-        
         @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -399,299 +104,161 @@
             z-index: 9999;
         }
         
-        .goal-reached-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s;
+        .page-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            overflow: hidden;
+            transform-origin: top left;
         }
         
-        .goal-reached-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
+        .donation-item {
+            animation: fadeIn 0.5s ease-in-out;
         }
         
         .goal-reached-message {
-            font-size: 6rem;
-            color: white;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            margin-bottom: 40px;
             animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .new-donation-popup {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background-color: white;
-            border-left: 8px solid var(--success-color);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            padding: 20px 25px;
-            border-radius: 8px;
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.5s ease-out;
-            display: flex;
-            align-items: center;
-            max-width: 400px;
-        }
-        
-        .new-donation-popup.show {
-            transform: translateX(0);
-        }
-        
-        .popup-icon {
-            background-color: var(--success-color);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            margin-right: 20px;
-            flex-shrink: 0;
-        }
-        
-        .popup-content {
-            flex-grow: 1;
-        }
-        
-        .popup-title {
-            font-weight: bold;
-            margin: 0 0 5px 0;
-            color: var(--success-color);
-            font-size: 1.5rem;
-        }
-        
-        .popup-message {
-            margin: 0;
-            font-size: 1.2rem;
-        }
-
-        .config-panel {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .config-toggle {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s;
-        }
-
-        .config-toggle:hover {
-            background-color: #005391;
-            transform: rotate(45deg);
-        }
-
-        .config-content {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            width: 400px;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            display: none;
-        }
-
         .config-content.show {
-            display: block;
             animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .api-status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .api-status.connected {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .api-status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .api-status.loading {
-            background-color: #fff3cd;
-            color: #856404;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 m-0 p-0 overflow-hidden w-[1920px] h-[1080px]">
     <div class="page-container" id="page-container">
         <div class="confetti-container" id="confetti-container"></div>
         
-        <div class="goal-reached-overlay" id="goal-reached-overlay">
-            <div class="goal-reached-message">DOEL BEREIKT! €<span id="goal-reached-amount">4000</span></div>
-            <button id="close-overlay" class="button">Geweldig! 🎉</button>
+        <div class="fixed top-0 left-0 w-full h-full bg-black/70 flex flex-col items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-500" id="goal-reached-overlay">
+            <div class="goal-reached-message text-6xl text-white text-center mb-10 shadow-lg">DOEL BEREIKT! €<span id="goal-reached-amount">4000</span></div>
+            <button id="close-overlay" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Geweldig! 🎉</button>
         </div>
         
-        <div class="new-donation-popup" id="donation-popup">
-            <div class="popup-icon">€</div>
-            <div class="popup-content">
-                <h4 class="popup-title">Nieuwe Donatie!</h4>
-                <p class="popup-message" id="popup-message">Er is zojuist €25 gedoneerd!</p>
+        <div class="fixed top-8 right-8 bg-white border-l-8 border-success shadow-lg p-5 rounded-lg z-10 transform translate-x-full transition-transform duration-500 flex items-center max-w-md" id="donation-popup">
+            <div class="bg-success text-white w-12 h-12 rounded-full flex items-center justify-center text-3xl mr-5 flex-shrink-0">€</div>
+            <div class="flex-grow">
+                <h4 class="font-bold m-0 mb-1 text-success text-xl">Nieuwe Donatie!</h4>
+                <p class="m-0 text-lg" id="popup-message">Er is zojuist €25 gedoneerd!</p>
             </div>
         </div>
         
-        <header>
-            <h1>Woord & Daad Actie-avond</h1>
-            <p>5 april 2024</p>
+        <header class="bg-gradient-to-r from-primary to-primary/80 text-white py-5 text-center shadow-md h-32 flex flex-col justify-center">
+            <h1 class="m-0 text-5xl text-shadow">Woord & Daad Actie-avond</h1>
+            <p class="text-2xl mt-2 mb-0">5 april 2024</p>
         </header>
         
-        <div class="container">
-            <div class="main-content">
-                <div class="donation-display">
-                    <div class="total-amount">€<span id="current-amount">0</span></div>
-                    <div class="goal-text">Ons doel: €<span id="goal-amount">4000</span></div>
+        <div class="max-w-7xl mx-auto p-5 flex flex-col h-[calc(100%-160px)]">
+            <div class="flex flex-grow mt-8">
+                <div class="flex-grow flex-2 flex flex-col items-center">
+                    <div class="text-6xl font-bold text-primary mb-2 text-center transition-all duration-500" id="total-amount-display">€<span id="current-amount">0</span></div>
+                    <div class="text-2xl mb-8 text-center text-gray-600">Ons doel: €<span id="goal-amount">4000</span></div>
                     
-                    <div class="thermometer-container">
-                        <div class="thermometer">
+                    <div class="relative w-64 h-[600px] mx-auto flex items-end justify-center">
+                        <div class="thermometer bg-white shadow-lg">
                             <div class="thermometer-fill" id="thermometer-fill"></div>
                         </div>
                         <div class="thermometer-bulb">
                             <div class="thermometer-shine"></div>
                         </div>
                         
-                        <div class="thermometer-markers">
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="top-marker">€4000</div>
+                        <div class="absolute top-0 right-[-140px] h-[500px] flex flex-col justify-between py-2">
+                            <div class="flex items-center">
+                                <div class="w-5 h-0.5 bg-gray-600 mr-2"></div>
+                                <div class="text-xl font-bold" id="top-marker">€4000</div>
                             </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-3">€3000</div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-0.5 bg-gray-600 mr-2"></div>
+                                <div class="text-xl font-bold" id="marker-3">€3000</div>
                             </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-2">€2000</div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-0.5 bg-gray-600 mr-2"></div>
+                                <div class="text-xl font-bold" id="marker-2">€2000</div>
                             </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-1">€1000</div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-0.5 bg-gray-600 mr-2"></div>
+                                <div class="text-xl font-bold" id="marker-1">€1000</div>
                             </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text">€0</div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-0.5 bg-gray-600 mr-2"></div>
+                                <div class="text-xl font-bold">€0</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="right-content">
-                    <div class="qr-section">
-                        <h2>Doneer nu!</h2>
-                        <div class="qr-code">
+                <div class="flex-1 flex flex-col ml-12">
+                    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg text-center">
+                        <h2 class="text-3xl text-primary border-b-0 pb-4 mt-0 mb-5">Doneer nu!</h2>
+                        <div class="w-[300px] h-[300px] mx-auto bg-white p-4 border-[10px] border-primary rounded-lg">
                             <!-- Placeholder QR code image with white background -->
-                            <img src="/api/placeholder/300/300" alt="Doneer QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+                            <img src="/api/placeholder/300/300" alt="Doneer QR Code" class="w-full h-full object-contain">
                         </div>
-                        <div class="qr-caption">Scan deze QR code om te doneren</div>
+                        <div class="mt-5 text-xl font-bold text-secondary">Scan deze QR code om te doneren</div>
                     </div>
                     
-                    <div class="recent-donations">
-                        <h2>Recente Donaties</h2>
-                        <ul class="donation-list" id="donation-list">
+                    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg flex-grow">
+                        <h2 class="text-3xl text-primary border-b-2 border-secondary pb-4 mt-0 mb-5 text-center">Recente Donaties</h2>
+                        <ul class="list-none p-0 m-0 max-h-[360px] overflow-y-auto" id="donation-list">
                             <!-- Donation items will be added here -->
-                            <li class="donation-item">Nog geen donaties ontvangen</li>
+                            <li class="py-4 px-5 border-b border-gray-200 flex justify-between items-center">Nog geen donaties ontvangen</li>
                         </ul>
                     </div>
                     
-                    <div class="test-controls">
-                        <h3>Test Controls</h3>
-                        <p>Gebruik deze knoppen om de thermometer te testen</p>
-                        <input type="number" id="donation-amount" class="amount-input" value="25" min="1" max="1000">
-                        <button id="add-donation" class="button">Voeg donatie toe</button>
-                        <button id="reset" class="button">Reset</button>
-                        <button id="fetch-donations" class="button">Haal Donaties Op</button>
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 mt-auto text-center shadow-md">
+                        <h3 class="text-2xl text-primary mt-0 mb-2">Test Controls</h3>
+                        <p class="mb-4">Gebruik deze knoppen om de thermometer te testen</p>
+                        <input type="number" id="donation-amount" class="p-4 border border-gray-300 rounded-full text-xl w-32 mx-2 text-center shadow-inner" value="25" min="1" max="1000">
+                        <button id="add-donation" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Voeg donatie toe</button>
+                        <button id="reset" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Reset</button>
+                        <button id="fetch-donations" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Haal Donaties Op</button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <footer>
+        <footer class="bg-gradient-to-r from-primary to-primary/80 text-white text-center py-5 text-xl">
             <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
         </footer>
 
         <!-- Configuration Panel -->
-        <div class="config-panel">
-            <button class="config-toggle" id="config-toggle">⚙️</button>
-            <div class="config-content" id="config-content">
-                <div class="api-config">
-                    <h3>Gravity Forms API Configuratie</h3>
-                    <div class="form-group">
-                        <label for="base-url">WP API Basis URL:</label>
-                        <input type="text" id="base-url" class="form-control" placeholder="bijv. https://uw-website.nl/wp-json/gf/v2" value="">
+        <div class="fixed bottom-5 right-5 z-10" id="config-panel">
+            <button class="bg-primary text-white border-none rounded-full w-16 h-16 text-2xl cursor-pointer shadow-lg transition-all duration-300 hover:bg-primary/80 hover:rotate-45" id="config-toggle">⚙️</button>
+            <div class="absolute bottom-[70px] right-0 w-[400px] bg-white rounded-lg p-5 shadow-xl hidden" id="config-content">
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-0 text-left shadow-sm">
+                    <h3 class="text-2xl text-primary mt-0 mb-5 text-center">Gravity Forms API Configuratie</h3>
+                    <div class="mb-4">
+                        <label for="base-url" class="block mb-1 font-bold">WP API Basis URL:</label>
+                        <input type="text" id="base-url" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="bijv. https://uw-website.nl/wp-json/gf/v2" value="">
                     </div>
-                    <div class="form-group">
-                        <label for="form-id">Formulier ID:</label>
-                        <input type="number" id="form-id" class="form-control" placeholder="bijv. 7" value="7">
+                    <div class="mb-4">
+                        <label for="form-id" class="block mb-1 font-bold">Formulier ID:</label>
+                        <input type="number" id="form-id" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="bijv. 7" value="7">
                     </div>
-                    <div class="form-group">
-                        <label for="api-key">API Gebruikersnaam:</label>
-                        <input type="text" id="api-username" class="form-control" placeholder="Gebruikersnaam">
+                    <div class="mb-4">
+                        <label for="api-username" class="block mb-1 font-bold">API Gebruikersnaam:</label>
+                        <input type="text" id="api-username" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="Gebruikersnaam">
                     </div>
-                    <div class="form-group">
-                        <label for="api-secret">API Sleutel:</label>
-                        <input type="password" id="api-key" class="form-control" placeholder="API Sleutel">
+                    <div class="mb-4">
+                        <label for="api-key" class="block mb-1 font-bold">API Sleutel:</label>
+                        <input type="password" id="api-key" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="API Sleutel">
                     </div>
-                    <div class="form-group">
-                        <label for="goal-amount-input">Doelbedrag:</label>
-                        <input type="number" id="goal-amount-input" class="form-control" placeholder="bijv. 4000" value="4000">
+                    <div class="mb-4">
+                        <label for="goal-amount-input" class="block mb-1 font-bold">Doelbedrag:</label>
+                        <input type="number" id="goal-amount-input" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="bijv. 4000" value="4000">
                     </div>
-                    <div class="form-group">
-                        <label for="refresh-interval">Verversingsinterval (seconden):</label>
-                        <input type="number" id="refresh-interval" class="form-control" placeholder="bijv. 60" value="60" min="10">
+                    <div class="mb-4">
+                        <label for="refresh-interval" class="block mb-1 font-bold">Verversingsinterval (seconden):</label>
+                        <input type="number" id="refresh-interval" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="bijv. 60" value="60" min="10">
                     </div>
-                    <div class="form-group">
-                        <label for="donation-field">Donatiebedrag veldnummer:</label>
-                        <input type="text" id="donation-field" class="form-control" placeholder="bijv. 3" value="3">
+                    <div class="mb-4">
+                        <label for="donation-field" class="block mb-1 font-bold">Donatiebedrag veldnummer:</label>
+                        <input type="text" id="donation-field" class="w-full p-2 border border-gray-300 rounded text-base" placeholder="bijv. 3" value="3">
                     </div>
-                    <div class="config-buttons">
-                        <button id="save-config" class="button">Opslaan</button>
-                        <button id="test-connection" class="button">Test Verbinding</button>
+                    <div class="flex justify-between mt-5">
+                        <button id="save-config" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-3 px-6 rounded-full cursor-pointer text-base font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Opslaan</button>
+                        <button id="test-connection" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-3 px-6 rounded-full cursor-pointer text-base font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Test Verbinding</button>
                     </div>
-                    <div class="api-status" id="api-status"></div>
+                    <div class="p-2 rounded mt-2 text-center font-bold hidden" id="api-status"></div>
                 </div>
             </div>
         </div>
@@ -804,10 +371,13 @@
         });
         
         closeOverlayBtn.addEventListener('click', function() {
-            goalReachedOverlay.classList.remove('show');
+            goalReachedOverlay.classList.remove('opacity-100');
+            goalReachedOverlay.classList.add('opacity-0');
+            goalReachedOverlay.classList.add('pointer-events-none');
         });
         
         configToggle.addEventListener('click', function() {
+            configContent.classList.toggle('hidden');
             configContent.classList.toggle('show');
         });
         
@@ -916,10 +486,10 @@
             
             // Scale and pulse effect for large donations
             if (percentage >= 100) {
-                document.querySelector('.total-amount').style.color = '#28a745';
-                document.querySelector('.total-amount').style.transform = 'scale(1.1)';
+                document.getElementById('total-amount-display').classList.add('text-success');
+                document.getElementById('total-amount-display').style.transform = 'scale(1.1)';
                 setTimeout(() => {
-                    document.querySelector('.total-amount').style.transform = 'scale(1)';
+                    document.getElementById('total-amount-display').style.transform = 'scale(1)';
                 }, 2000);
             }
         }
@@ -929,7 +499,7 @@
             
             if (donations.length === 0) {
                 const emptyItem = document.createElement('li');
-                emptyItem.className = 'donation-item';
+                emptyItem.className = 'py-4 px-5 border-b border-gray-200 flex justify-between items-center';
                 emptyItem.textContent = 'Nog geen donaties ontvangen';
                 donationList.appendChild(emptyItem);
                 return;
@@ -937,18 +507,18 @@
             
             donations.forEach(donation => {
                 const item = document.createElement('li');
-                item.className = 'donation-item';
+                item.className = 'py-4 px-5 border-b border-gray-200 flex justify-between items-center donation-item';
                 
                 const donationInfo = document.createElement('div');
                 
                 const donationDate = document.createElement('div');
-                donationDate.className = 'donation-date';
+                donationDate.className = 'text-gray-500 text-sm';
                 donationDate.textContent = `${donation.date} ${donation.time}`;
                 
                 donationInfo.appendChild(donationDate);
                 
                 const donationAmount = document.createElement('div');
-                donationAmount.className = 'donation-amount';
+                donationAmount.className = 'font-bold text-secondary text-2xl';
                 donationAmount.textContent = '€' + donation.amount.toLocaleString('nl-NL');
                 
                 item.appendChild(donationInfo);
@@ -960,10 +530,10 @@
         
         function showPopup(donation) {
             popupMessage.textContent = `Er is zojuist €${donation.amount} gedoneerd!`;
-            donationPopup.classList.add('show');
+            donationPopup.classList.add('translate-x-0');
             
             setTimeout(() => {
-                donationPopup.classList.remove('show');
+                donationPopup.classList.remove('translate-x-0');
             }, 5000);
         }
         
@@ -1025,7 +595,9 @@
         
         function celebrateGoalReached() {
             // Show the overlay
-            goalReachedOverlay.classList.add('show');
+            goalReachedOverlay.classList.remove('opacity-0');
+            goalReachedOverlay.classList.add('opacity-100');
+            goalReachedOverlay.classList.remove('pointer-events-none');
             
             // Massive confetti
             createConfetti(500);
@@ -1042,14 +614,20 @@
         
         function showApiStatus(message, status) {
             apiStatus.textContent = message;
-            apiStatus.className = 'api-status';
-            apiStatus.classList.add(status);
+            apiStatus.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
+            
+            if (status === 'connected') {
+                apiStatus.classList.add('bg-green-100', 'text-green-800');
+            } else if (status === 'error') {
+                apiStatus.classList.add('bg-red-100', 'text-red-800');
+            } else if (status === 'loading') {
+                apiStatus.classList.add('bg-yellow-100', 'text-yellow-800');
+            }
             
             // Auto hide after 5 seconds if it's a success message
             if (status === 'connected') {
                 setTimeout(() => {
-                    apiStatus.className = 'api-status';
-                    apiStatus.textContent = '';
+                    apiStatus.classList.add('hidden');
                 }, 5000);
             }
         }
@@ -1097,43 +675,43 @@
             refreshTimer = setInterval(fetchDonations, refreshInterval * 1000);
         }
         
-function fetchDonations() {
-    if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
-        console.error('API configuration incomplete');
-        return;
-    }
-    
-    // Create Authorization header
-    const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
-    
-    // Set up search parameters
-    const searchParams = new URLSearchParams({
-        'sorting[key]': 'id',
-        'sorting[direction]': 'DESC',
-        'paging[page_size]': 20
-    });
-    
-    // Use the form-specific endpoint
-    fetch(`${apiConfig.baseUrl}/forms/${apiConfig.formId}/entries?${searchParams.toString()}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': auth,
-            'Content-Type': 'application/json'
+        function fetchDonations() {
+            if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
+                console.error('API configuration incomplete');
+                return;
+            }
+            
+            // Create Authorization header
+            const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
+            
+            // Set up search parameters
+            const searchParams = new URLSearchParams({
+                'sorting[key]': 'id',
+                'sorting[direction]': 'DESC',
+                'paging[page_size]': 20
+            });
+            
+            // Use the form-specific endpoint
+            fetch(`${apiConfig.baseUrl}/forms/${apiConfig.formId}/entries?${searchParams.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': auth,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                processApiDonations(data);
+            })
+            .catch(error => {
+                console.error('API Fetch Error:', error);
+            });
         }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        processApiDonations(data);
-    })
-    .catch(error => {
-        console.error('API Fetch Error:', error);
-    });
-}
         
         function processApiDonations(entriesData) {
             if (!Array.isArray(entriesData)) {

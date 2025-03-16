@@ -123,6 +123,16 @@
         .config-content.show {
             animation: slideUp 0.3s ease-out;
         }
+        
+        /* Add styles for hiding config button */
+        .config-toggle {
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
+        }
+        
+        .config-panel:hover .config-toggle {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 m-0 p-0 overflow-hidden w-[1920px] h-[1080px]">
@@ -149,6 +159,19 @@
         
         <div class="max-w-7xl mx-auto p-5 flex flex-col h-[calc(100%-160px)]">
             <div class="flex flex-grow mt-8">
+                <!-- QR Code (Left Side) -->
+                <div class="flex-1 flex flex-col mr-12">
+                    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg text-center">
+                        <h2 class="text-3xl text-primary border-b-0 pb-4 mt-0 mb-5">Doneer nu!</h2>
+                        <div class="w-[300px] h-[300px] mx-auto bg-white p-4 border-[10px] border-primary rounded-lg">
+                            <!-- Placeholder QR code image with white background -->
+                            <img src="/api/placeholder/300/300" alt="Doneer QR Code" class="w-full h-full object-contain">
+                        </div>
+                        <div class="mt-5 text-xl font-bold text-secondary">Scan deze QR code om te doneren</div>
+                    </div>
+                </div>
+                
+                <!-- Thermometer (Center) -->
                 <div class="flex-grow flex-2 flex flex-col items-center">
                     <div class="text-6xl font-bold text-primary mb-2 text-center transition-all duration-500" id="total-amount-display">€<span id="current-amount">0</span></div>
                     <div class="text-2xl mb-8 text-center text-gray-600">Ons doel: €<span id="goal-amount">4000</span></div>
@@ -186,31 +209,14 @@
                     </div>
                 </div>
                 
+                <!-- Recent Donations (Right Side) -->
                 <div class="flex-1 flex flex-col ml-12">
-                    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg text-center">
-                        <h2 class="text-3xl text-primary border-b-0 pb-4 mt-0 mb-5">Doneer nu!</h2>
-                        <div class="w-[300px] h-[300px] mx-auto bg-white p-4 border-[10px] border-primary rounded-lg">
-                            <!-- Placeholder QR code image with white background -->
-                            <img src="/api/placeholder/300/300" alt="Doneer QR Code" class="w-full h-full object-contain">
-                        </div>
-                        <div class="mt-5 text-xl font-bold text-secondary">Scan deze QR code om te doneren</div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg flex-grow">
+                    <div class="bg-white rounded-xl p-8 shadow-lg flex-grow">
                         <h2 class="text-3xl text-primary border-b-2 border-secondary pb-4 mt-0 mb-5 text-center">Recente Donaties</h2>
-                        <ul class="list-none p-0 m-0 max-h-[360px] overflow-y-auto" id="donation-list">
+                        <ul class="list-none p-0 m-0 max-h-[500px] overflow-y-auto" id="donation-list">
                             <!-- Donation items will be added here -->
                             <li class="py-4 px-5 border-b border-gray-200 flex justify-between items-center">Nog geen donaties ontvangen</li>
                         </ul>
-                    </div>
-                    
-                    <div class="bg-white border border-gray-200 rounded-xl p-6 mt-auto text-center shadow-md">
-                        <h3 class="text-2xl text-primary mt-0 mb-2">Test Controls</h3>
-                        <p class="mb-4">Gebruik deze knoppen om de thermometer te testen</p>
-                        <input type="number" id="donation-amount" class="p-4 border border-gray-300 rounded-full text-xl w-32 mx-2 text-center shadow-inner" value="25" min="1" max="1000">
-                        <button id="add-donation" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Voeg donatie toe</button>
-                        <button id="reset" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Reset</button>
-                        <button id="fetch-donations" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md mx-2 hover:shadow-lg hover:-translate-y-1">Haal Donaties Op</button>
                     </div>
                 </div>
             </div>
@@ -220,11 +226,12 @@
             <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
         </footer>
 
-        <!-- Configuration Panel -->
-        <div class="fixed bottom-5 right-5 z-10" id="config-panel">
-            <button class="bg-primary text-white border-none rounded-full w-16 h-16 text-2xl cursor-pointer shadow-lg transition-all duration-300 hover:bg-primary/80 hover:rotate-45" id="config-toggle">⚙️</button>
-            <div class="absolute bottom-[70px] right-0 w-[400px] bg-white rounded-lg p-5 shadow-xl hidden" id="config-content">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-0 text-left shadow-sm">
+        <!-- Configuration Panel - Hidden until hover -->
+        <div class="fixed bottom-5 right-5 z-10 config-panel" id="config-panel">
+            <button class="bg-primary text-white border-none rounded-full w-16 h-16 text-2xl cursor-pointer shadow-lg transition-all duration-300 hover:bg-primary/80 hover:rotate-45 config-toggle" id="config-toggle">⚙️</button>
+            <div class="absolute bottom-[70px] right-0 w-[500px] bg-white rounded-lg p-5 shadow-xl hidden" id="config-content">
+                <!-- API Configuration Section -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-5 text-left shadow-sm">
                     <h3 class="text-2xl text-primary mt-0 mb-5 text-center">Gravity Forms API Configuratie</h3>
                     <div class="mb-4">
                         <label for="base-url" class="block mb-1 font-bold">WP API Basis URL:</label>
@@ -259,6 +266,18 @@
                         <button id="test-connection" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-3 px-6 rounded-full cursor-pointer text-base font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Test Verbinding</button>
                     </div>
                     <div class="p-2 rounded mt-2 text-center font-bold hidden" id="api-status"></div>
+                </div>
+                
+                <!-- Test Controls Section (Moved here from bottom) -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 text-center shadow-md">
+                    <h3 class="text-2xl text-primary mt-0 mb-2">Test Controls</h3>
+                    <p class="mb-4">Gebruik deze knoppen om de thermometer te testen</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <input type="number" id="donation-amount" class="p-4 border border-gray-300 rounded-full text-xl w-32 text-center shadow-inner" value="25" min="1" max="1000">
+                        <button id="add-donation" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Voeg donatie toe</button>
+                        <button id="reset" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Reset</button>
+                        <button id="fetch-donations" class="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-4 px-8 rounded-full cursor-pointer text-xl font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Haal Donaties Op</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -436,6 +455,11 @@
             document.getElementById('marker-3').textContent = '€' + Math.round(goalAmount * 0.75).toLocaleString('nl-NL');
             document.getElementById('marker-2').textContent = '€' + Math.round(goalAmount * 0.5).toLocaleString('nl-NL');
             document.getElementById('marker-1').textContent = '€' + Math.round(goalAmount * 0.25).toLocaleString('nl-NL');
+            
+            // Update thermometer if current amount exists
+            if (currentAmount > 0) {
+                updateThermometer();
+            }
         }
         
         function updateScale() {

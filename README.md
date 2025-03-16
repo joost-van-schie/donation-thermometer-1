@@ -30,7 +30,19 @@ This project is a donation thermometer application built with React and Tailwind
    yarn install
    ```
 
-3. Start the development server:
+3. Build the project:
+
+   ```bash
+   npm run build
+   ```
+
+   or
+
+   ```bash
+   yarn build
+   ```
+
+4. Start the development server:
 
    ```bash
    npm start
@@ -42,7 +54,7 @@ This project is a donation thermometer application built with React and Tailwind
    yarn start
    ```
 
-4. Open your browser and navigate to `http://localhost:3000` to see the app in action.
+5. Open your browser and navigate to `http://localhost:3000` to see the app in action.
 
 ## State Management
 
@@ -101,6 +113,25 @@ The app uses React Context for global state management, including donations, tot
 5. API connections
 6. Animations and effects
 7. Configuration panel
+
+## Deployment
+
+### Using GitHub Actions
+
+This project includes a GitHub Action workflow to automatically build and deploy the React app to GitHub Pages.
+
+1. Ensure your repository has a `gh-pages` branch. If not, create one:
+
+   ```bash
+   git checkout --orphan gh-pages
+   git reset --hard
+   git commit --allow-empty -m "Initialize gh-pages branch"
+   git push origin gh-pages
+   ```
+
+2. The GitHub Action workflow is defined in `.github/workflows/static.yml`. It will run on every push to the `main` branch and deploy the build output to the `gh-pages` branch.
+
+3. To trigger the deployment manually, you can use the "Run workflow" button in the Actions tab of your GitHub repository.
 
 ## License
 

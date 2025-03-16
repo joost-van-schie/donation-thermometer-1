@@ -1,1235 +1,310 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Woord & Daad Donatie Thermometer</title>
-    <style>
-        :root {
-            --primary-color: #0069b4;
-            --secondary-color: #e55b13;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --success-color: #28a745;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            width: 1920px;
-            height: 1080px;
-        }
-        
-        .page-container {
-            width: 1920px;
-            height: 1080px;
-            position: relative;
-            overflow: hidden;
-            transform-origin: top left;
-        }
-        
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100% - 160px);
-        }
-        
-        header {
-            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        header h1 {
-            margin: 0;
-            font-size: 3.5rem;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        header p {
-            font-size: 1.8rem;
-            margin: 10px 0 0;
-        }
-        
-        .main-content {
-            display: flex;
-            flex-grow: 1;
-            margin-top: 30px;
-        }
-        
-        .donation-display {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .right-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            margin-left: 50px;
-        }
-        
-        .qr-section {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            flex: 1;
-        }
-        
-        .qr-section h2 {
-            color: var(--primary-color);
-            font-size: 2.4rem;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        
-        .qr-code {
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 15px;
-            border: 10px solid var(--primary-color);
-            border-radius: 10px;
-        }
-        
-        .qr-caption {
-            margin-top: 20px;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-        }
-        
-        .total-amount {
-            font-size: 4.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 10px 0 20px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s ease;
-        }
-        
-        .goal-text {
-            font-size: 2rem;
-            margin: 0 0 30px;
-            text-align: center;
-            color: #555;
-        }
-        
-        .thermometer-container {
-            position: relative;
-            width: 250px;
-            height: 600px;
-            margin: 0 auto;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-        
-        .thermometer {
-            width: 120px;
-            height: 500px;
-            background-color: #fff;
-            border-radius: 60px 60px 0 0;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            border: 3px solid #ccc;
-            border-bottom: none;
-        }
-        
-        .thermometer::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #e55b13;
-            transform: translateY(30px);
-            border-radius: 50% 50% 0 0;
-        }
-        
-        .thermometer-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0%;
-            background-color: #e55b13;
-            transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1;
-        }
-        
-        .thermometer-bulb {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
-            background-color: #e55b13;
-            border-radius: 50%;
-            z-index: 2;
-            border: 3px solid #ccc;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .thermometer-shine {
-            position: absolute;
-            top: 25%;
-            left: 25%;
-            width: 20px;
-            height: 20px;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-        }
-        
-        .thermometer-markers {
-            position: absolute;
-            top: 0;
-            right: -140px;
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 10px 0;
-        }
-        
-        .marker {
-            display: flex;
-            align-items: center;
-        }
-        
-        .marker-line {
-            width: 20px;
-            height: 2px;
-            background-color: #666;
-            margin-right: 10px;
-        }
-        
-        .marker-text {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .recent-donations {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            flex: 2;
-        }
-        
-        .recent-donations h2 {
-            text-align: center;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 15px;
-            margin-top: 0;
-            font-size: 2.4rem;
-        }
-        
-        .donation-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 360px;
-            overflow-y: auto;
-        }
-        
-        .donation-item {
-            padding: 18px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.5s ease-in-out;
-            font-size: 1.3rem;
-        }
-        
-        .donation-item:last-child {
-            border-bottom: none;
-        }
-        
-        .donation-amount {
-            font-weight: bold;
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-        }
-        
-        .donation-date {
-            color: #777;
-            font-size: 1.1rem;
-        }
-        
-        .test-controls {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: auto;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .api-config {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            text-align: left;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .api-config h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 2rem;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        .config-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        
-        .test-controls h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 2rem;
-        }
-        
-        .button {
-            background: linear-gradient(to bottom, var(--primary-color), #005391);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.4rem;
-            font-weight: bold;
-            transition: all 0.3s;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .button:hover {
-            background: linear-gradient(to bottom, #0075c9, #0069b4);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        .button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .amount-input {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            font-size: 1.4rem;
-            width: 120px;
-            margin: 10px;
-            text-align: center;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        footer {
-            background: linear-gradient(135deg, #0069b4 0%, #00487d 100%);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 1.4rem;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        
-        .goal-reached-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
-        
-        .goal-reached-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .goal-reached-message {
-            font-size: 6rem;
-            color: white;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            margin-bottom: 40px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .new-donation-popup {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background-color: white;
-            border-left: 8px solid var(--success-color);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            padding: 20px 25px;
-            border-radius: 8px;
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.5s ease-out;
-            display: flex;
-            align-items: center;
-            max-width: 400px;
-        }
-        
-        .new-donation-popup.show {
-            transform: translateX(0);
-        }
-        
-        .popup-icon {
-            background-color: var(--success-color);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            margin-right: 20px;
-            flex-shrink: 0;
-        }
-        
-        .popup-content {
-            flex-grow: 1;
-        }
-        
-        .popup-title {
-            font-weight: bold;
-            margin: 0 0 5px 0;
-            color: var(--success-color);
-            font-size: 1.5rem;
-        }
-        
-        .popup-message {
-            margin: 0;
-            font-size: 1.2rem;
-        }
-
-        .config-panel {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .config-toggle {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s;
-        }
-
-        .config-toggle:hover {
-            background-color: #005391;
-            transform: rotate(45deg);
-        }
-
-        .config-content {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            width: 400px;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            display: none;
-        }
-
-        .config-content.show {
-            display: block;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .api-status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .api-status.connected {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .api-status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .api-status.loading {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-    </style>
-</head>
-<body>
-    <div class="page-container" id="page-container">
-        <div class="confetti-container" id="confetti-container"></div>
-        
-        <div class="goal-reached-overlay" id="goal-reached-overlay">
-            <div class="goal-reached-message">DOEL BEREIKT! €<span id="goal-reached-amount">4000</span></div>
-            <button id="close-overlay" class="button">Geweldig! 🎉</button>
-        </div>
-        
-        <div class="new-donation-popup" id="donation-popup">
-            <div class="popup-icon">€</div>
-            <div class="popup-content">
-                <h4 class="popup-title">Nieuwe Donatie!</h4>
-                <p class="popup-message" id="popup-message">Er is zojuist €25 gedoneerd!</p>
-            </div>
-        </div>
-        
-        <header>
-            <h1>Woord & Daad Actie-avond</h1>
-            <p>5 april 2024</p>
-        </header>
-        
-        <div class="container">
-            <div class="main-content">
-                <div class="donation-display">
-                    <div class="total-amount">€<span id="current-amount">0</span></div>
-                    <div class="goal-text">Ons doel: €<span id="goal-amount">4000</span></div>
-                    
-                    <div class="thermometer-container">
-                        <div class="thermometer">
-                            <div class="thermometer-fill" id="thermometer-fill"></div>
-                        </div>
-                        <div class="thermometer-bulb">
-                            <div class="thermometer-shine"></div>
-                        </div>
-                        
-                        <div class="thermometer-markers">
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="top-marker">€4000</div>
-                            </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-3">€3000</div>
-                            </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-2">€2000</div>
-                            </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text" id="marker-1">€1000</div>
-                            </div>
-                            <div class="marker">
-                                <div class="marker-line"></div>
-                                <div class="marker-text">€0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="right-content">
-                    <div class="qr-section">
-                        <h2>Doneer nu!</h2>
-                        <div class="qr-code">
-                            <!-- Placeholder QR code image with white background -->
-                            <img src="/api/placeholder/300/300" alt="Doneer QR Code" style="width: 100%; height: 100%; object-fit: contain;">
-                        </div>
-                        <div class="qr-caption">Scan deze QR code om te doneren</div>
-                    </div>
-                    
-                    <div class="recent-donations">
-                        <h2>Recente Donaties</h2>
-                        <ul class="donation-list" id="donation-list">
-                            <!-- Donation items will be added here -->
-                            <li class="donation-item">Nog geen donaties ontvangen</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-controls">
-                        <h3>Test Controls</h3>
-                        <p>Gebruik deze knoppen om de thermometer te testen</p>
-                        <input type="number" id="donation-amount" class="amount-input" value="25" min="1" max="1000">
-                        <button id="add-donation" class="button">Voeg donatie toe</button>
-                        <button id="reset" class="button">Reset</button>
-                        <button id="fetch-donations" class="button">Haal Donaties Op</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <footer>
-            <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
-        </footer>
-
-        <!-- Configuration Panel -->
-        <div class="config-panel">
-            <button class="config-toggle" id="config-toggle">⚙️</button>
-            <div class="config-content" id="config-content">
-                <div class="api-config">
-                    <h3>Gravity Forms API Configuratie</h3>
-                    <div class="form-group">
-                        <label for="base-url">WP API Basis URL:</label>
-                        <input type="text" id="base-url" class="form-control" placeholder="bijv. https://uw-website.nl/wp-json/gf/v2" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="form-id">Formulier ID:</label>
-                        <input type="number" id="form-id" class="form-control" placeholder="bijv. 7" value="7">
-                    </div>
-                    <div class="form-group">
-                        <label for="api-key">API Gebruikersnaam:</label>
-                        <input type="text" id="api-username" class="form-control" placeholder="Gebruikersnaam">
-                    </div>
-                    <div class="form-group">
-                        <label for="api-secret">API Sleutel:</label>
-                        <input type="password" id="api-key" class="form-control" placeholder="API Sleutel">
-                    </div>
-                    <div class="form-group">
-                        <label for="goal-amount-input">Doelbedrag:</label>
-                        <input type="number" id="goal-amount-input" class="form-control" placeholder="bijv. 4000" value="4000">
-                    </div>
-                    <div class="form-group">
-                        <label for="refresh-interval">Verversingsinterval (seconden):</label>
-                        <input type="number" id="refresh-interval" class="form-control" placeholder="bijv. 60" value="60" min="10">
-                    </div>
-                    <div class="form-group">
-                        <label for="donation-field">Donatiebedrag veldnummer:</label>
-                        <input type="text" id="donation-field" class="form-control" placeholder="bijv. 3" value="3">
-                    </div>
-                    <div class="config-buttons">
-                        <button id="save-config" class="button">Opslaan</button>
-                        <button id="test-connection" class="button">Test Verbinding</button>
-                    </div>
-                    <div class="api-status" id="api-status"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Configuration
-        let currentAmount = 0;
-        let goalAmount = 4000;
-        let donations = [];
-        let goalReached = false;
-        let lastFetchedEntry = null;
-        let refreshInterval = 60; // seconds
-        let refreshTimer = null;
-        let donationField = '3';
-        
-        // API Configuration
-        let apiConfig = {
-            baseUrl: '',
-            formId: '7',
-            username: '',
-            apiKey: '',
-        };
-        
-        // Load config from localStorage if available
-        function loadConfig() {
-            const savedConfig = localStorage.getItem('donationThermometerConfig');
-            if (savedConfig) {
-                try {
-                    const config = JSON.parse(savedConfig);
-                    apiConfig = config.apiConfig;
-                    goalAmount = config.goalAmount || 4000;
-                    refreshInterval = config.refreshInterval || 60;
-                    donationField = config.donationField || '3';
-                    
-                    // Update form fields
-                    document.getElementById('base-url').value = apiConfig.baseUrl;
-                    document.getElementById('form-id').value = apiConfig.formId;
-                    document.getElementById('api-username').value = apiConfig.username;
-                    document.getElementById('api-key').value = apiConfig.apiKey;
-                    document.getElementById('goal-amount-input').value = goalAmount;
-                    document.getElementById('refresh-interval').value = refreshInterval;
-                    document.getElementById('donation-field').value = donationField;
-                    
-                    // Update goal markers
-                    updateGoalAmount(goalAmount);
-                    
-                    // If we have valid API credentials, start fetching
-                    if (apiConfig.baseUrl && apiConfig.username && apiConfig.apiKey) {
-                        startFetchingDonations();
-                    }
-                } catch (error) {
-                    console.error('Error loading config:', error);
-                }
-            }
-        }
-        
-        // Save config to localStorage
-        function saveConfig() {
-            const config = {
-                apiConfig: apiConfig,
-                goalAmount: goalAmount,
-                refreshInterval: refreshInterval,
-                donationField: donationField
-            };
-            
-            localStorage.setItem('donationThermometerConfig', JSON.stringify(config));
-        }
-        
-        // Elements
-        const currentAmountEl = document.getElementById('current-amount');
-        const goalAmountEl = document.getElementById('goal-amount');
-        const thermometerFill = document.getElementById('thermometer-fill');
-        const donationList = document.getElementById('donation-list');
-        const addDonationBtn = document.getElementById('add-donation');
-        const resetBtn = document.getElementById('reset');
-        const donationAmountInput = document.getElementById('donation-amount');
-        const donationPopup = document.getElementById('donation-popup');
-        const popupMessage = document.getElementById('popup-message');
-        const confettiContainer = document.getElementById('confetti-container');
-        const goalReachedOverlay = document.getElementById('goal-reached-overlay');
-        const closeOverlayBtn = document.getElementById('close-overlay');
-        const pageContainer = document.getElementById('page-container');
-        const configToggle = document.getElementById('config-toggle');
-        const configContent = document.getElementById('config-content');
-        const saveConfigBtn = document.getElementById('save-config');
-        const testConnectionBtn = document.getElementById('test-connection');
-        const apiStatus = document.getElementById('api-status');
-        const fetchDonationsBtn = document.getElementById('fetch-donations');
-        const goalReachedAmount = document.getElementById('goal-reached-amount');
-        
-        // Initialize
-        loadConfig();
-        updateThermometer();
-        updateScale();
-        
-        // Event listeners
-        addDonationBtn.addEventListener('click', function() {
-            const amount = parseInt(donationAmountInput.value) || 25;
-            addDonation(amount);
-        });
-        
-        resetBtn.addEventListener('click', function() {
-            currentAmount = 0;
-            donations = [];
-            goalReached = false;
-            lastFetchedEntry = null;
-            updateThermometer();
-            updateDonationList();
-        });
-        
-        closeOverlayBtn.addEventListener('click', function() {
-            goalReachedOverlay.classList.remove('show');
-        });
-        
-        configToggle.addEventListener('click', function() {
-            configContent.classList.toggle('show');
-        });
-        
-        saveConfigBtn.addEventListener('click', function() {
-            // Get values from form
-            apiConfig.baseUrl = document.getElementById('base-url').value;
-            apiConfig.formId = document.getElementById('form-id').value;
-            apiConfig.username = document.getElementById('api-username').value;
-            apiConfig.apiKey = document.getElementById('api-key').value;
-            
-            // Update other config values
-            goalAmount = parseInt(document.getElementById('goal-amount-input').value) || 4000;
-            refreshInterval = parseInt(document.getElementById('refresh-interval').value) || 60;
-            donationField = document.getElementById('donation-field').value;
-            
-            // Update goal amount and markers
-            updateGoalAmount(goalAmount);
-            
-            // Save config
-            saveConfig();
-            
-            // Restart fetch timer if all values are set
-            if (apiConfig.baseUrl && apiConfig.username && apiConfig.apiKey) {
-                startFetchingDonations();
-                showApiStatus('Configuratie opgeslagen. Start donatieverwerking.', 'connected');
-            } else {
-                showApiStatus('Configuratie opgeslagen, maar API-gegevens zijn onvolledig.', 'error');
-            }
-        });
-        
-        testConnectionBtn.addEventListener('click', function() {
-            // Get values from form
-            const baseUrl = document.getElementById('base-url').value;
-            const formId = document.getElementById('form-id').value;
-            const username = document.getElementById('api-username').value;
-            const apiKey = document.getElementById('api-key').value;
-            
-            // Test connection
-            testApiConnection(baseUrl, formId, username, apiKey);
-        });
-        
-        fetchDonationsBtn.addEventListener('click', function() {
-            fetchDonations();
-        });
-        
-        window.addEventListener('resize', updateScale);
-        
-        // Functions
-        function updateGoalAmount(amount) {
-            goalAmount = amount;
-            goalAmountEl.textContent = goalAmount.toLocaleString('nl-NL');
-            goalReachedAmount.textContent = goalAmount.toLocaleString('nl-NL');
-            
-            // Update markers
-            document.getElementById('top-marker').textContent = '€' + goalAmount.toLocaleString('nl-NL');
-            document.getElementById('marker-3').textContent = '€' + Math.round(goalAmount * 0.75).toLocaleString('nl-NL');
-            document.getElementById('marker-2').textContent = '€' + Math.round(goalAmount * 0.5).toLocaleString('nl-NL');
-            document.getElementById('marker-1').textContent = '€' + Math.round(goalAmount * 0.25).toLocaleString('nl-NL');
-        }
-        
-        function updateScale() {
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            const scaleX = windowWidth / 1920;
-            const scaleY = windowHeight / 1080;
-            const scale = Math.min(scaleX, scaleY);
-            
-            pageContainer.style.transform = `scale(${scale})`;
-        }
-        
-        function addDonation(amount, date = null, time = null) {
-            const now = new Date();
-            const donation = {
-                amount: amount,
-                date: date || now.toLocaleDateString('nl-NL'),
-                time: time || now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
-            };
-            
-            donations.unshift(donation);
-            if (donations.length > 8) {
-                donations.pop();
-            }
-            
-            const previousAmount = currentAmount;
-            currentAmount += amount;
-            updateThermometer();
-            updateDonationList();
-            showPopup(donation);
-            
-            // Determine celebration level based on donation amount
-            if (amount >= 10) {
-                createConfetti(amount);
-            }
-            
-            // Check if goal was just reached
-            if (!goalReached && previousAmount < goalAmount && currentAmount >= goalAmount) {
-                goalReached = true;
-                celebrateGoalReached();
-            }
-        }
-        
-        function updateThermometer() {
-            currentAmountEl.textContent = currentAmount.toLocaleString('nl-NL');
-            const percentage = Math.min(currentAmount / goalAmount * 100, 100);
-            thermometerFill.style.height = percentage + '%';
-            
-            // Scale and pulse effect for large donations
-            if (percentage >= 100) {
-                document.querySelector('.total-amount').style.color = '#28a745';
-                document.querySelector('.total-amount').style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    document.querySelector('.total-amount').style.transform = 'scale(1)';
-                }, 2000);
-            }
-        }
-        
-        function updateDonationList() {
-            donationList.innerHTML = '';
-            
-            if (donations.length === 0) {
-                const emptyItem = document.createElement('li');
-                emptyItem.className = 'donation-item';
-                emptyItem.textContent = 'Nog geen donaties ontvangen';
-                donationList.appendChild(emptyItem);
-                return;
-            }
-            
-            donations.forEach(donation => {
-                const item = document.createElement('li');
-                item.className = 'donation-item';
-                
-                const donationInfo = document.createElement('div');
-                
-                const donationDate = document.createElement('div');
-                donationDate.className = 'donation-date';
-                donationDate.textContent = `${donation.date} ${donation.time}`;
-                
-                donationInfo.appendChild(donationDate);
-                
-                const donationAmount = document.createElement('div');
-                donationAmount.className = 'donation-amount';
-                donationAmount.textContent = '€' + donation.amount.toLocaleString('nl-NL');
-                
-                item.appendChild(donationInfo);
-                item.appendChild(donationAmount);
-                
-                donationList.appendChild(item);
-            });
-        }
-        
-        function showPopup(donation) {
-            popupMessage.textContent = `Er is zojuist €${donation.amount} gedoneerd!`;
-            donationPopup.classList.add('show');
-            
-            setTimeout(() => {
-                donationPopup.classList.remove('show');
-            }, 5000);
-        }
-        
-        function createConfetti(amount) {
-            // Number of confetti pieces based on donation amount
-            const pieceCount = Math.min(Math.max(amount, 30), 150);
-            
-            for (let i = 0; i < pieceCount; i++) {
-                const confetti = document.createElement('div');
-                
-                // Random position
-                const x = Math.random() * 1920;
-                const y = -30;
-                
-                // Random size
-                const size = Math.random() * 15 + 5;
-                
-                // Random color
-                const colors = ['#e55b13', '#0069b4', '#28a745', '#ffc107', '#dc3545', '#6610f2', '#fd7e14', '#20c997'];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                
-                // Apply styles
-                confetti.style.position = 'absolute';
-                confetti.style.width = `${size}px`;
-                confetti.style.height = `${size}px`;
-                confetti.style.backgroundColor = color;
-                confetti.style.left = `${x}px`;
-                confetti.style.top = `${y}px`;
-                
-                // Random shape
-                const shapes = ['square', 'circle'];
-                const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                
-                if (shape === 'circle') {
-                    confetti.style.borderRadius = '50%';
-                }
-                
-                confettiContainer.appendChild(confetti);
-                
-                // Animate
-                const animationDuration = Math.random() * 3 + 2;
-                const fallDistance = 1200;
-                const sidewaysMove = Math.random() * 200 - 100;
-                
-                confetti.animate([
-                    { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
-                    { transform: `translate(${sidewaysMove}px, ${fallDistance}px) rotate(360deg)`, opacity: 0 }
-                ], {
-                    duration: animationDuration * 1000,
-                    easing: 'cubic-bezier(0.15, 0.85, 0.45, 1)'
-                });
-                
-                // Remove after animation
-                setTimeout(() => {
-                    confetti.remove();
-                }, animationDuration * 1000);
-            }
-        }
-        
-        function celebrateGoalReached() {
-            // Show the overlay
-            goalReachedOverlay.classList.add('show');
-            
-            // Massive confetti
-            createConfetti(500);
-            
-            // Continue celebration
-            setTimeout(() => {
-                createConfetti(300);
-            }, 2000);
-            
-            setTimeout(() => {
-                createConfetti(300);
-            }, 4000);
-        }
-        
-        function showApiStatus(message, status) {
-            apiStatus.textContent = message;
-            apiStatus.className = 'api-status';
-            apiStatus.classList.add(status);
-            
-            // Auto hide after 5 seconds if it's a success message
-            if (status === 'connected') {
-                setTimeout(() => {
-                    apiStatus.className = 'api-status';
-                    apiStatus.textContent = '';
-                }, 5000);
-            }
-        }
-        
-        function testApiConnection(baseUrl, formId, username, apiKey) {
-            showApiStatus('Verbinding testen...', 'loading');
-            
-            // Create Authorization header
-            const auth = 'Basic ' + btoa(username + ':' + apiKey);
-            
-            // Make test request to get form
-            fetch(`${baseUrl}/forms/${formId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': auth,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                showApiStatus('Verbinding succesvol!', 'connected');
-                console.log('API Test Success:', data);
-            })
-            .catch(error => {
-                showApiStatus(`Verbindingsfout: ${error.message}`, 'error');
-                console.error('API Test Error:', error);
-            });
-        }
-        
-        function startFetchingDonations() {
-            // Clear any existing timer
-            if (refreshTimer) {
-                clearInterval(refreshTimer);
-            }
-            
-            // Fetch immediately
-            fetchDonations();
-            
-            // Set up timer for regular fetching
-            refreshTimer = setInterval(fetchDonations, refreshInterval * 1000);
-        }
-        
-function fetchDonations() {
-    if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
-        console.error('API configuration incomplete');
-        return;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Woord & Daad Donatie Thermometer</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <!-- React and ReactDOM -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
+  <style>
+    .thermometer-bulb {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #e55b13;
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
-    // Create Authorization header
-    const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
+    .thermometer-shine {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      top: 15px;
+      left: 15px;
+    }
     
-    // Set up search parameters
-    const searchParams = new URLSearchParams({
-        'sorting[key]': 'id',
-        'sorting[direction]': 'DESC',
-        'paging[page_size]': 20
-    });
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     
-    // Use the form-specific endpoint
-    fetch(`${apiConfig.baseUrl}/forms/${apiConfig.formId}/entries?${searchParams.toString()}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': auth,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        processApiDonations(data);
-    })
-    .catch(error => {
-        console.error('API Fetch Error:', error);
-    });
-}
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes confetti-fall {
+      from { transform: translateY(0) rotate(0deg); opacity: 1; }
+      to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+    
+    .confetti {
+      position: fixed;
+      animation: confetti-fall 3s linear forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    const DonationThermometer = () => {
+      const [currentAmount, setCurrentAmount] = useState(0);
+      const [goalAmount, setGoalAmount] = useState(4000);
+      const [donations, setDonations] = useState([]);
+      const [donationAmount, setDonationAmount] = useState(25);
+      const [showPopup, setShowPopup] = useState(false);
+      const [popupMessage, setPopupMessage] = useState('');
+      const [goalReached, setGoalReached] = useState(false);
+      
+      const percentage = Math.min((currentAmount / goalAmount) * 100, 100);
+      
+      useEffect(() => {
+        // Add some initial donations for demonstration
+        setTimeout(() => addDonation(600), 1000);
+        setTimeout(() => addDonation(400), 3000);
+        setTimeout(() => addDonation(800), 5000);
+      }, []);
+      
+      const addDonation = (amount) => {
+        const now = new Date();
+        const donation = {
+          id: Date.now(),
+          amount: amount,
+          date: now.toLocaleDateString('nl-NL'),
+          time: now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+        };
         
-        function processApiDonations(entriesData) {
-            if (!Array.isArray(entriesData)) {
-                console.error('Invalid API response:', entriesData);
-                return;
-            }
-            
-            // Reset if this is our first fetch
-            if (lastFetchedEntry === null && entriesData.length > 0) {
-                // Remember the latest entry ID
-                lastFetchedEntry = entriesData[0].id;
-                
-                // Calculate total amount from all entries and add to current amount
-                let totalApiAmount = 0;
-                entriesData.forEach(entry => {
-                    // Extract donation amount from the entry
-                    if (entry[donationField]) {
-                        const amount = parseFloat(entry[donationField].replace(/[^\d,.-]/g, '').replace(',', '.'));
-                        if (!isNaN(amount)) {
-                            totalApiAmount += amount;
-                            
-                            // Add to donations list
-                            const date = new Date(entry.date_created);
-                            const donation = {
-                                amount: amount,
-                                date: date.toLocaleDateString('nl-NL'),
-                                time: date.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
-                            };
-                            
-                            // Add to our donations array (limit to 8 most recent)
-                            if (donations.length < 8) {
-                                donations.push(donation);
-                            }
-                        }
-                    }
-                });
-                
-                // Sort donations by date (newest first)
-                donations.sort((a, b) => {
-                    const dateA = new Date(`${a.date} ${a.time}`);
-                    const dateB = new Date(`${b.date} ${b.time}`);
-                    return dateB - dateA;
-                });
-                
-                // Update current amount and UI
-                currentAmount = totalApiAmount;
-                updateThermometer();
-                updateDonationList();
-                
-                console.log(`Initial load: ${entriesData.length} entries, total amount: ${totalApiAmount}`);
-                showApiStatus(`${entriesData.length} donaties geladen, totaalbedrag: €${totalApiAmount.toLocaleString('nl-NL')}`, 'connected');
-                
-                // Check if goal is already reached
-                if (currentAmount >= goalAmount) {
-                    goalReached = true;
-                }
-            } else if (entriesData.length > 0) {
-                // Find new entries (those with ID greater than lastFetchedEntry)
-                const newEntries = entriesData.filter(entry => entry.id > lastFetchedEntry);
-                
-                if (newEntries.length > 0) {
-                    console.log(`Found ${newEntries.length} new donations`);
-                    
-                    // Update lastFetchedEntry
-                    lastFetchedEntry = newEntries[0].id;
-                    
-                    // Process each new entry
-                    newEntries.forEach(entry => {
-                        if (entry[donationField]) {
-                            const amount = parseFloat(entry[donationField].replace(/[^\d,.-]/g, '').replace(',', '.'));
-                            if (!isNaN(amount)) {
-                                const date = new Date(entry.date_created);
-                                addDonation(
-                                    amount,
-                                    date.toLocaleDateString('nl-NL'),
-                                    date.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
-                                );
-                            }
-                        }
-                    });
-                }
-            }
+        const previousAmount = currentAmount;
+        const newAmount = previousAmount + amount;
+        
+        setCurrentAmount(newAmount);
+        setDonations(prev => [donation, ...prev].slice(0, 8));
+        showDonationPopup(amount);
+        
+        if (amount >= 100) {
+          createConfetti(amount);
         }
         
-        // Add a few initial donations for demonstration
-        setTimeout(() => {
-            addDonation(600);
-        }, 1000);
+        if (!goalReached && previousAmount < goalAmount && newAmount >= goalAmount) {
+          setGoalReached(true);
+          createConfetti(500);
+          setTimeout(() => createConfetti(300), 2000);
+        }
+      };
+      
+      const showDonationPopup = (amount) => {
+        setPopupMessage(`Er is zojuist €${amount} gedoneerd!`);
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 5000);
+      };
+      
+      const createConfetti = (amount) => {
+        const pieceCount = Math.min(Math.max(amount, 30), 150);
+        const container = document.getElementById('confetti-container');
         
-        setTimeout(() => {
-            addDonation(400);
-        }, 3000);
-        
-        setTimeout(() => {
-            addDonation(800);
-        }, 5000);
-    </script>
+        for (let i = 0; i < pieceCount; i++) {
+          const confetti = document.createElement('div');
+          const size = Math.random() * 10 + 5;
+          const colors = ['#e55b13', '#0069b4', '#28a745', '#ffc107', '#dc3545'];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          
+          confetti.className = 'confetti';
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.backgroundColor = color;
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          
+          container.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 3000);
+        }
+      };
+      
+      const resetThermometer = () => {
+        setCurrentAmount(0);
+        setDonations([]);
+        setGoalReached(false);
+      };
+      
+      return (
+        <div className="min-h-screen">
+          <div id="confetti-container" className="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></div>
+          
+          {/* Donation Popup */}
+          <div className={`fixed top-6 right-6 bg-white p-4 rounded-lg shadow-lg flex items-center transform transition-transform duration-500 z-40 ${showPopup ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className="bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl mr-4">€</div>
+            <div>
+              <h4 className="text-lg font-bold text-green-500">Nieuwe Donatie!</h4>
+              <p>{popupMessage}</p>
+            </div>
+          </div>
+          
+          {/* Goal Reached Overlay */}
+          {goalReached && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50">
+              <div className="text-white text-6xl font-bold mb-8 animate-pulse">
+                DOEL BEREIKT! €{goalAmount.toLocaleString('nl-NL')}
+              </div>
+              <button 
+                className="bg-blue-600 text-white py-3 px-8 rounded-full text-xl font-bold hover:bg-blue-700 transition"
+                onClick={() => setGoalReached(false)}
+              >
+                Geweldig! 🎉
+              </button>
+            </div>
+          )}
+          
+          {/* Header */}
+          <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 shadow-md">
+            <div className="container mx-auto text-center">
+              <h1 className="text-4xl font-bold">Woord & Daad Actie-avond</h1>
+              <p className="text-xl mt-2">5 april 2024</p>
+            </div>
+          </header>
+          
+          <main className="container mx-auto py-8 px-4">
+            <div className="flex flex-col lg:flex-row">
+              
+              {/* Left Column - Thermometer */}
+              <div className="w-full lg:w-2/3 flex flex-col items-center">
+                <div className="text-5xl font-bold text-blue-600 mb-2">
+                  €{currentAmount.toLocaleString('nl-NL')}
+                </div>
+                <div className="text-2xl text-gray-600 mb-8">
+                  Ons doel: €{goalAmount.toLocaleString('nl-NL')}
+                </div>
+                
+                <div className="relative h-96 mb-16">
+                  {/* Thermometer */}
+                  <div className="relative w-20 h-80 bg-white rounded-t-full border-2 border-gray-300 overflow-hidden mx-auto">
+                    <div 
+                      className="absolute bottom-0 w-full bg-orange-500 transition-all duration-1000 ease-out"
+                      style={{ height: `${percentage}%` }}
+                    ></div>
+                  </div>
+                  
+                  {/* Thermometer Bulb */}
+                  <div className="thermometer-bulb">
+                    <div className="thermometer-shine"></div>
+                  </div>
+                  
+                  {/* Markers */}
+                  <div className="absolute top-0 left-full ml-4 h-80 flex flex-col justify-between py-2">
+                    <div className="flex items-center">
+                      <div className="w-4 h-0.5 bg-gray-600 mr-2"></div>
+                      <div className="font-bold">€{goalAmount.toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-4 h-0.5 bg-gray-600 mr-2"></div>
+                      <div className="font-bold">€{Math.round(goalAmount * 0.75).toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-4 h-0.5 bg-gray-600 mr-2"></div>
+                      <div className="font-bold">€{Math.round(goalAmount * 0.5).toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-4 h-0.5 bg-gray-600 mr-2"></div>
+                      <div className="font-bold">€{Math.round(goalAmount * 0.25).toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-4 h-0.5 bg-gray-600 mr-2"></div>
+                      <div className="font-bold">€0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right Column */}
+              <div className="w-full lg:w-1/3 lg:pl-8">
+                {/* QR Code Section */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 text-center">
+                  <h2 className="text-2xl font-bold text-blue-600 mb-4">Doneer nu!</h2>
+                  <div className="w-48 h-48 mx-auto bg-white p-2 border-4 border-blue-600 rounded-lg mb-4">
+                    <img src="/api/placeholder/180/180" alt="Doneer QR Code" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="text-lg font-bold text-orange-500">
+                    Scan deze QR code om te doneren
+                  </div>
+                </div>
+                
+                {/* Recent Donations */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                  <h2 className="text-2xl font-bold text-blue-600 pb-3 mb-4 text-center border-b-2 border-orange-500">
+                    Recente Donaties
+                  </h2>
+                  <ul className="max-h-72 overflow-y-auto">
+                    {donations.length > 0 ? (
+                      donations.map(donation => (
+                        <li key={donation.id} className="py-3 border-b border-gray-100 flex justify-between items-center fade-in">
+                          <div>
+                            <div className="text-gray-500 text-sm">{donation.date} {donation.time}</div>
+                          </div>
+                          <div className="text-xl font-bold text-orange-500">
+                            €{donation.amount.toLocaleString('nl-NL')}
+                          </div>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="py-3">Nog geen donaties ontvangen</li>
+                    )}
+                  </ul>
+                </div>
+                
+                {/* Test Controls */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h3 className="text-xl font-bold text-blue-600 mb-2 text-center">Test Controls</h3>
+                  <p className="text-center mb-4">Gebruik deze knoppen om de thermometer te testen</p>
+                  <div className="flex flex-wrap justify-center">
+                    <input
+                      type="number"
+                      value={donationAmount}
+                      onChange={(e) => setDonationAmount(parseInt(e.target.value) || 0)}
+                      className="w-24 px-4 py-2 border border-gray-300 rounded-full text-center mx-2 my-2"
+                      min="1"
+                      max="1000"
+                    />
+                    <button
+                      onClick={() => addDonation(donationAmount)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-full font-bold hover:bg-blue-700 transition mx-2 my-2"
+                    >
+                      Voeg donatie toe
+                    </button>
+                    <button
+                      onClick={resetThermometer}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-full font-bold hover:bg-blue-700 transition mx-2 my-2"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+          
+          <footer className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 mt-8">
+            <div className="container mx-auto text-center">
+              <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+    
+    ReactDOM.render(<DonationThermometer />, document.getElementById('root'));
+  </script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -294,6 +293,47 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
+        .api-config {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .api-config h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 2rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .config-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
         .test-controls h3 {
             margin-top: 0;
             color: var(--primary-color);
@@ -446,6 +486,76 @@
             margin: 0;
             font-size: 1.2rem;
         }
+
+        .config-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .config-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .config-toggle:hover {
+            background-color: #005391;
+            transform: rotate(45deg);
+        }
+
+        .config-content {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 400px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .config-content.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .api-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .api-status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .api-status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .api-status.loading {
+            background-color: #fff3cd;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -453,7 +563,7 @@
         <div class="confetti-container" id="confetti-container"></div>
         
         <div class="goal-reached-overlay" id="goal-reached-overlay">
-            <div class="goal-reached-message">DOEL BEREIKT! €4000</div>
+            <div class="goal-reached-message">DOEL BEREIKT! €<span id="goal-reached-amount">4000</span></div>
             <button id="close-overlay" class="button">Geweldig! 🎉</button>
         </div>
         
@@ -487,19 +597,19 @@
                         <div class="thermometer-markers">
                             <div class="marker">
                                 <div class="marker-line"></div>
-                                <div class="marker-text">€4000</div>
+                                <div class="marker-text" id="top-marker">€4000</div>
                             </div>
                             <div class="marker">
                                 <div class="marker-line"></div>
-                                <div class="marker-text">€3000</div>
+                                <div class="marker-text" id="marker-3">€3000</div>
                             </div>
                             <div class="marker">
                                 <div class="marker-line"></div>
-                                <div class="marker-text">€2000</div>
+                                <div class="marker-text" id="marker-2">€2000</div>
                             </div>
                             <div class="marker">
                                 <div class="marker-line"></div>
-                                <div class="marker-text">€1000</div>
+                                <div class="marker-text" id="marker-1">€1000</div>
                             </div>
                             <div class="marker">
                                 <div class="marker-line"></div>
@@ -523,6 +633,7 @@
                         <h2>Recente Donaties</h2>
                         <ul class="donation-list" id="donation-list">
                             <!-- Donation items will be added here -->
+                            <li class="donation-item">Nog geen donaties ontvangen</li>
                         </ul>
                     </div>
                     
@@ -532,6 +643,7 @@
                         <input type="number" id="donation-amount" class="amount-input" value="25" min="1" max="1000">
                         <button id="add-donation" class="button">Voeg donatie toe</button>
                         <button id="reset" class="button">Reset</button>
+                        <button id="fetch-donations" class="button">Haal Donaties Op</button>
                     </div>
                 </div>
             </div>
@@ -540,14 +652,114 @@
         <footer>
             <p>© 2024 Woord & Daad Actie-avond | Gemaakt met ❤️</p>
         </footer>
+
+        <!-- Configuration Panel -->
+        <div class="config-panel">
+            <button class="config-toggle" id="config-toggle">⚙️</button>
+            <div class="config-content" id="config-content">
+                <div class="api-config">
+                    <h3>Gravity Forms API Configuratie</h3>
+                    <div class="form-group">
+                        <label for="base-url">WP API Basis URL:</label>
+                        <input type="text" id="base-url" class="form-control" placeholder="bijv. https://uw-website.nl/wp-json/gf/v2" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="form-id">Formulier ID:</label>
+                        <input type="number" id="form-id" class="form-control" placeholder="bijv. 7" value="7">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-key">API Gebruikersnaam:</label>
+                        <input type="text" id="api-username" class="form-control" placeholder="Gebruikersnaam">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-secret">API Sleutel:</label>
+                        <input type="password" id="api-key" class="form-control" placeholder="API Sleutel">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-amount-input">Doelbedrag:</label>
+                        <input type="number" id="goal-amount-input" class="form-control" placeholder="bijv. 4000" value="4000">
+                    </div>
+                    <div class="form-group">
+                        <label for="refresh-interval">Verversingsinterval (seconden):</label>
+                        <input type="number" id="refresh-interval" class="form-control" placeholder="bijv. 60" value="60" min="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="donation-field">Donatiebedrag veldnummer:</label>
+                        <input type="text" id="donation-field" class="form-control" placeholder="bijv. 3" value="3">
+                    </div>
+                    <div class="config-buttons">
+                        <button id="save-config" class="button">Opslaan</button>
+                        <button id="test-connection" class="button">Test Verbinding</button>
+                    </div>
+                    <div class="api-status" id="api-status"></div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
         // Configuration
         let currentAmount = 0;
-        const goalAmount = 4000;
+        let goalAmount = 4000;
         let donations = [];
         let goalReached = false;
+        let lastFetchedEntry = null;
+        let refreshInterval = 60; // seconds
+        let refreshTimer = null;
+        let donationField = '3';
+        
+        // API Configuration
+        let apiConfig = {
+            baseUrl: '',
+            formId: '7',
+            username: '',
+            apiKey: '',
+        };
+        
+        // Load config from localStorage if available
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('donationThermometerConfig');
+            if (savedConfig) {
+                try {
+                    const config = JSON.parse(savedConfig);
+                    apiConfig = config.apiConfig;
+                    goalAmount = config.goalAmount || 4000;
+                    refreshInterval = config.refreshInterval || 60;
+                    donationField = config.donationField || '3';
+                    
+                    // Update form fields
+                    document.getElementById('base-url').value = apiConfig.baseUrl;
+                    document.getElementById('form-id').value = apiConfig.formId;
+                    document.getElementById('api-username').value = apiConfig.username;
+                    document.getElementById('api-key').value = apiConfig.apiKey;
+                    document.getElementById('goal-amount-input').value = goalAmount;
+                    document.getElementById('refresh-interval').value = refreshInterval;
+                    document.getElementById('donation-field').value = donationField;
+                    
+                    // Update goal markers
+                    updateGoalAmount(goalAmount);
+                    
+                    // If we have valid API credentials, start fetching
+                    if (apiConfig.baseUrl && apiConfig.username && apiConfig.apiKey) {
+                        startFetchingDonations();
+                    }
+                } catch (error) {
+                    console.error('Error loading config:', error);
+                }
+            }
+        }
+        
+        // Save config to localStorage
+        function saveConfig() {
+            const config = {
+                apiConfig: apiConfig,
+                goalAmount: goalAmount,
+                refreshInterval: refreshInterval,
+                donationField: donationField
+            };
+            
+            localStorage.setItem('donationThermometerConfig', JSON.stringify(config));
+        }
         
         // Elements
         const currentAmountEl = document.getElementById('current-amount');
@@ -563,10 +775,17 @@
         const goalReachedOverlay = document.getElementById('goal-reached-overlay');
         const closeOverlayBtn = document.getElementById('close-overlay');
         const pageContainer = document.getElementById('page-container');
+        const configToggle = document.getElementById('config-toggle');
+        const configContent = document.getElementById('config-content');
+        const saveConfigBtn = document.getElementById('save-config');
+        const testConnectionBtn = document.getElementById('test-connection');
+        const apiStatus = document.getElementById('api-status');
+        const fetchDonationsBtn = document.getElementById('fetch-donations');
+        const goalReachedAmount = document.getElementById('goal-reached-amount');
         
         // Initialize
+        loadConfig();
         updateThermometer();
-        goalAmountEl.textContent = goalAmount.toLocaleString('nl-NL');
         updateScale();
         
         // Event listeners
@@ -579,6 +798,7 @@
             currentAmount = 0;
             donations = [];
             goalReached = false;
+            lastFetchedEntry = null;
             updateThermometer();
             updateDonationList();
         });
@@ -587,9 +807,67 @@
             goalReachedOverlay.classList.remove('show');
         });
         
+        configToggle.addEventListener('click', function() {
+            configContent.classList.toggle('show');
+        });
+        
+        saveConfigBtn.addEventListener('click', function() {
+            // Get values from form
+            apiConfig.baseUrl = document.getElementById('base-url').value;
+            apiConfig.formId = document.getElementById('form-id').value;
+            apiConfig.username = document.getElementById('api-username').value;
+            apiConfig.apiKey = document.getElementById('api-key').value;
+            
+            // Update other config values
+            goalAmount = parseInt(document.getElementById('goal-amount-input').value) || 4000;
+            refreshInterval = parseInt(document.getElementById('refresh-interval').value) || 60;
+            donationField = document.getElementById('donation-field').value;
+            
+            // Update goal amount and markers
+            updateGoalAmount(goalAmount);
+            
+            // Save config
+            saveConfig();
+            
+            // Restart fetch timer if all values are set
+            if (apiConfig.baseUrl && apiConfig.username && apiConfig.apiKey) {
+                startFetchingDonations();
+                showApiStatus('Configuratie opgeslagen. Start donatieverwerking.', 'connected');
+            } else {
+                showApiStatus('Configuratie opgeslagen, maar API-gegevens zijn onvolledig.', 'error');
+            }
+        });
+        
+        testConnectionBtn.addEventListener('click', function() {
+            // Get values from form
+            const baseUrl = document.getElementById('base-url').value;
+            const formId = document.getElementById('form-id').value;
+            const username = document.getElementById('api-username').value;
+            const apiKey = document.getElementById('api-key').value;
+            
+            // Test connection
+            testApiConnection(baseUrl, formId, username, apiKey);
+        });
+        
+        fetchDonationsBtn.addEventListener('click', function() {
+            fetchDonations();
+        });
+        
         window.addEventListener('resize', updateScale);
         
         // Functions
+        function updateGoalAmount(amount) {
+            goalAmount = amount;
+            goalAmountEl.textContent = goalAmount.toLocaleString('nl-NL');
+            goalReachedAmount.textContent = goalAmount.toLocaleString('nl-NL');
+            
+            // Update markers
+            document.getElementById('top-marker').textContent = '€' + goalAmount.toLocaleString('nl-NL');
+            document.getElementById('marker-3').textContent = '€' + Math.round(goalAmount * 0.75).toLocaleString('nl-NL');
+            document.getElementById('marker-2').textContent = '€' + Math.round(goalAmount * 0.5).toLocaleString('nl-NL');
+            document.getElementById('marker-1').textContent = '€' + Math.round(goalAmount * 0.25).toLocaleString('nl-NL');
+        }
+        
         function updateScale() {
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
@@ -600,12 +878,12 @@
             pageContainer.style.transform = `scale(${scale})`;
         }
         
-        function addDonation(amount) {
+        function addDonation(amount, date = null, time = null) {
             const now = new Date();
             const donation = {
                 amount: amount,
-                date: now.toLocaleDateString('nl-NL'),
-                time: now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+                date: date || now.toLocaleDateString('nl-NL'),
+                time: time || now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
             };
             
             donations.unshift(donation);
@@ -760,6 +1038,183 @@
             setTimeout(() => {
                 createConfetti(300);
             }, 4000);
+        }
+        
+        function showApiStatus(message, status) {
+            apiStatus.textContent = message;
+            apiStatus.className = 'api-status';
+            apiStatus.classList.add(status);
+            
+            // Auto hide after 5 seconds if it's a success message
+            if (status === 'connected') {
+                setTimeout(() => {
+                    apiStatus.className = 'api-status';
+                    apiStatus.textContent = '';
+                }, 5000);
+            }
+        }
+        
+        function testApiConnection(baseUrl, formId, username, apiKey) {
+            showApiStatus('Verbinding testen...', 'loading');
+            
+            // Create Authorization header
+            const auth = 'Basic ' + btoa(username + ':' + apiKey);
+            
+            // Make test request to get form
+            fetch(`${baseUrl}/forms/${formId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': auth,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showApiStatus('Verbinding succesvol!', 'connected');
+                console.log('API Test Success:', data);
+            })
+            .catch(error => {
+                showApiStatus(`Verbindingsfout: ${error.message}`, 'error');
+                console.error('API Test Error:', error);
+            });
+        }
+        
+        function startFetchingDonations() {
+            // Clear any existing timer
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+            }
+            
+            // Fetch immediately
+            fetchDonations();
+            
+            // Set up timer for regular fetching
+            refreshTimer = setInterval(fetchDonations, refreshInterval * 1000);
+        }
+        
+        function fetchDonations() {
+            if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey) {
+                console.error('API configuration incomplete');
+                return;
+            }
+            
+            // Create Authorization header
+            const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
+            
+            // Set up search parameters
+            const searchParams = new URLSearchParams({
+                'sorting[key]': 'id',
+                'sorting[direction]': 'DESC',
+                'paging[page_size]': 20
+            });
+            
+            fetch(`${apiConfig.baseUrl}/entries?${searchParams.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': auth,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                processApiDonations(data);
+            })
+            .catch(error => {
+                console.error('API Fetch Error:', error);
+            });
+        }
+        
+        function processApiDonations(entriesData) {
+            if (!Array.isArray(entriesData)) {
+                console.error('Invalid API response:', entriesData);
+                return;
+            }
+            
+            // Reset if this is our first fetch
+            if (lastFetchedEntry === null && entriesData.length > 0) {
+                // Remember the latest entry ID
+                lastFetchedEntry = entriesData[0].id;
+                
+                // Calculate total amount from all entries and add to current amount
+                let totalApiAmount = 0;
+                entriesData.forEach(entry => {
+                    // Extract donation amount from the entry
+                    if (entry[donationField]) {
+                        const amount = parseFloat(entry[donationField].replace(/[^\d,.-]/g, '').replace(',', '.'));
+                        if (!isNaN(amount)) {
+                            totalApiAmount += amount;
+                            
+                            // Add to donations list
+                            const date = new Date(entry.date_created);
+                            const donation = {
+                                amount: amount,
+                                date: date.toLocaleDateString('nl-NL'),
+                                time: date.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+                            };
+                            
+                            // Add to our donations array (limit to 8 most recent)
+                            if (donations.length < 8) {
+                                donations.push(donation);
+                            }
+                        }
+                    }
+                });
+                
+                // Sort donations by date (newest first)
+                donations.sort((a, b) => {
+                    const dateA = new Date(`${a.date} ${a.time}`);
+                    const dateB = new Date(`${b.date} ${b.time}`);
+                    return dateB - dateA;
+                });
+                
+                // Update current amount and UI
+                currentAmount = totalApiAmount;
+                updateThermometer();
+                updateDonationList();
+                
+                console.log(`Initial load: ${entriesData.length} entries, total amount: ${totalApiAmount}`);
+                showApiStatus(`${entriesData.length} donaties geladen, totaalbedrag: €${totalApiAmount.toLocaleString('nl-NL')}`, 'connected');
+                
+                // Check if goal is already reached
+                if (currentAmount >= goalAmount) {
+                    goalReached = true;
+                }
+            } else if (entriesData.length > 0) {
+                // Find new entries (those with ID greater than lastFetchedEntry)
+                const newEntries = entriesData.filter(entry => entry.id > lastFetchedEntry);
+                
+                if (newEntries.length > 0) {
+                    console.log(`Found ${newEntries.length} new donations`);
+                    
+                    // Update lastFetchedEntry
+                    lastFetchedEntry = newEntries[0].id;
+                    
+                    // Process each new entry
+                    newEntries.forEach(entry => {
+                        if (entry[donationField]) {
+                            const amount = parseFloat(entry[donationField].replace(/[^\d,.-]/g, '').replace(',', '.'));
+                            if (!isNaN(amount)) {
+                                const date = new Date(entry.date_created);
+                                addDonation(
+                                    amount,
+                                    date.toLocaleDateString('nl-NL'),
+                                    date.toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'})
+                                );
+                            }
+                        }
+                    });
+                }
+            }
         }
         
         // Add a few initial donations for demonstration

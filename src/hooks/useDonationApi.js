@@ -115,6 +115,10 @@ export function useDonationApi({
 
   // --- API Fetching Logic ---
   const fetchDonations = useCallback(async () => {
+    // Read URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterStatus = urlParams.get('status'); // e.g., 'paid'
+
     if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
       console.error('API configuration incomplete');
       // displayApiStatus('API configuratie onvolledig.', 'error'); // Avoid showing error on auto-refresh
@@ -131,18 +135,29 @@ export function useDonationApi({
     const searchParamsObj = {
       'sorting[key]': 'id',
       'sorting[direction]': 'DESC',
-      'paging[page_size]': pageSize
+      'paging[page_size]': pageSize,
+      search: {} // Initialize search object
     };
+    const fieldFilters = [];
 
-    // For subsequent fetches, only request entries newer than the last one we processed
+    // Add filter for newer entries on subsequent fetches
     if (!isInitialLoad && lastFetchedEntry) {
-        searchParamsObj.search = JSON.stringify({
-            field_filters: [
-                { key: 'id', operator: '>', value: lastFetchedEntry }
-            ]
-        });
-        // We might not need a large page size when filtering, but keep 50 just in case
-        // console.log(`Adding search filter: id > ${lastFetchedEntry}`);
+        fieldFilters.push({ key: 'id', operator: '>', value: lastFetchedEntry });
+        console.log(`Adding search filter: id > ${lastFetchedEntry}`);
+    }
+
+    // Add filter for payment status if URL parameter status=paid is present
+    if (filterStatus && filterStatus.toLowerCase() === 'paid') {
+        fieldFilters.push({ key: 'payment_status', value: 'Paid' });
+        console.log(`Adding search filter: payment_status = Paid (from URL param)`);
+    }
+
+    // Add field filters to search object if any exist
+    if (fieldFilters.length > 0) {
+      searchParamsObj.search = JSON.stringify({ field_filters: fieldFilters });
+    } else {
+      // Remove empty search object if no filters are applied
+      delete searchParamsObj.search;
     }
 
     const searchParams = new URLSearchParams(searchParamsObj);

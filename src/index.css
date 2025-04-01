@@ -2,15 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles that can't be easily replaced with Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* Custom thermometer styles */
 .thermometer {
     width: 120px;
     height: 500px;
     border-radius: 60px 60px 0 0;
     position: relative;
     overflow: hidden;
-    border: 3px solid #ccc;
+    border: 3px solid #fff;
     border-bottom: none;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
 }
 
 .thermometer::before {
@@ -20,7 +23,7 @@
     left: 0;
     width: 100%;
     height: 60px;
-    background-color: #e55b13;
+    background-color: #c74a4a; /* primary color */
     transform: translateY(30px);
     border-radius: 50% 50% 0 0;
 }
@@ -31,8 +34,8 @@
     left: 0;
     width: 100%;
     height: 0%;
-    background-color: #e55b13;
-    transition: height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background-color: #c74a4a; /* primary color */
+    transition: height 2s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 1;
 }
 
@@ -43,10 +46,9 @@
     transform: translateX(-50%);
     width: 120px;
     height: 120px;
-    background-color: #e55b13;
+    background-color: #c74a4a; /* primary color */
     border-radius: 50%;
     z-index: 2;
-    border: 3px solid #ccc;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -60,6 +62,7 @@
     border-radius: 50%;
 }
 
+/* Animation styles */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -67,7 +70,7 @@
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
 
@@ -76,6 +79,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Other required styles */
 .confetti-container {
     position: fixed;
     top: 0;
@@ -92,6 +96,7 @@
     position: relative;
     overflow: hidden;
     transform-origin: top left;
+    background-color: #e9ecef; /* background color */
 }
 
 .donation-item {
@@ -106,12 +111,12 @@
     animation: slideUp 0.3s ease-out;
 }
 
-/* Add styles for hiding config button */
-.config-toggle {
-    opacity: 0.2;
-    transition: opacity 0.3s ease;
-}
-
-.config-panel:hover .config-toggle {
-    opacity: 1;
+body, #root {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #e9ecef; /* background color */
+  color: #6c757d; /* text color */
 }

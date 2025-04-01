@@ -5,7 +5,6 @@ import Header from './components/Header';
 import QRCodeSection from './components/QRCodeSection';
 import ThermometerDisplay from './components/ThermometerDisplay';
 import DonationList from './components/DonationList';
-import Footer from './components/Footer';
 import ConfigPanel from './components/ConfigPanel';
 // Removed placeholder component definitions
 
@@ -462,8 +461,6 @@ function App() {
             </div>
           </div>
         </main>
-
-        <Footer />
 
         {/* Configuration Panel Component */}
         <ConfigPanel

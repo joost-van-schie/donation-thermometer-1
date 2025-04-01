@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './ConfigPanel.module.css';
 
 const ConfigPanel = ({
   initialApiConfig,
@@ -55,7 +56,7 @@ const ConfigPanel = ({
 
       {/* Configuration Content */}
       <div
-        className={`absolute bottom-[70px] right-0 w-[500px] bg-white rounded-lg p-5 shadow-card transition-all duration-300 ${showContent ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95'}`}
+        className={`absolute bottom-[70px] right-0 w-[500px] bg-white rounded-lg p-5 shadow-card transition-all duration-300 ${showContent ? `opacity-100 visible scale-100 ${styles.configContentShow}` : 'opacity-0 invisible scale-95'}`}
         aria-hidden={!showContent}
       >
         {/* API Configuration Section */}

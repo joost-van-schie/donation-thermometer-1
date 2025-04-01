@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './ThermometerDisplay.module.css';
 
 const ThermometerDisplay = ({ currentAmount, goalAmount }) => {
   // Calculate percentage, ensuring it doesn't exceed 100%
@@ -15,10 +16,9 @@ const ThermometerDisplay = ({ currentAmount, goalAmount }) => {
   return (
     // Removed outer div, styling is now handled in App.js
     <>
-      <h2 className="text-3xl text-[#4a2683] pb-4 mt-0 mb-5 font-semibold text-center">Ons Doel</h2>
       {/* Total Amount Display */}
       <div
-        className={`text-6xl font-bold mb-2 text-center transition-transform duration-500 ease-in-out ${goalReached ? 'text-[#4a2683] scale-110' : 'text-[#4a2683] scale-100'}`} // Use new primary color
+        className={`text-6xl font-bold mb-2 text-center transition-transform duration-500 ease-in-out ${goalReached ? 'text-[#4a2683] scale-110' : 'text-[#4a2683] scale-100'} ${goalReached ? styles.goalReachedMessage : ''}`} // Use new primary color and apply pulse animation
       >
         €<span>{formattedCurrentAmount}</span>
       </div>
@@ -27,21 +27,21 @@ const ThermometerDisplay = ({ currentAmount, goalAmount }) => {
       </div>
 
       {/* Thermometer Visual */}
-      <div className="relative w-64 h-[600px] mx-auto flex items-end justify-center">
+      <div className="relative w-64 h-[600px] mx-auto flex justify-center">
         {/* Thermometer uses styles from index.css */}
-        <div className="thermometer">
+        <div className={styles.thermometer}>
           <div
-            className="thermometer-fill" // Removed bg-primary and rounded-t-full, handled by CSS
+            className={styles.thermometerFill} // Use CSS module style
             style={{ height: `${percentage}%` }}
           ></div>
         </div>
         {/* Bulb uses styles from index.css */}
-        <div className="thermometer-bulb">
+        <div className={styles.thermometerBulb}>
           {/* Removed thermometer-shine div */}
         </div>
 
         {/* Markers with improved visualization */}
-        <div className="absolute top-0 right-[-140px] h-[500px] flex flex-col justify-between py-2">
+        <div className="absolute top-0 right-[-65px] h-[500px] flex flex-col justify-between py-2">
           {/* Top Marker (Goal) */}
           <div className="flex items-center">
             <div className="w-12 h-1.5 bg-[#4a2683] mr-2 rounded-full"></div> {/* Updated style */}

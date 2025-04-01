@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './DonationList.module.css';
 
 const DonationList = ({ donations }) => (
   // Removed outer divs, styling is now handled in App.js
@@ -11,7 +12,7 @@ const DonationList = ({ donations }) => (
         </li>
       ) : (
         donations.map((donation, index) => (
-          <li key={index} className="py-4 px-5 border-b border-background flex justify-between items-center donation-item group hover:bg-background/30 transition-colors rounded-lg my-1"> {/* Uses new background color */}
+          <li key={index} className={`py-4 px-5 border-b border-background flex justify-between items-center ${styles.donationItem} group hover:bg-background/30 transition-colors rounded-lg my-1`}> {/* Uses new background color and CSS module */}
             {/* Donation Info (Date/Time) */}
             <div>
               <div className="text-text text-sm">{`${donation.date} ${donation.time}`}</div> {/* Uses new text color */}

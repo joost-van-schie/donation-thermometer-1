@@ -444,12 +444,22 @@ function App() {
 
         <Header />
 
-        <main className="max-w-7xl mx-auto p-5 flex flex-col h-[calc(100vh-128px-84px)]"> {/* Use vh and ensure header/footer heights are correct (128px + 84px) */}
-          <div className="flex flex-grow mt-8">
-            {/* Pass QR Code URL from config if available, otherwise default */}
-            <QRCodeSection qrCodeUrl="https://www.kerkemst.nl/wp-content/uploads/2025/04/qr-actieavond-1.png" />
-            <ThermometerDisplay currentAmount={currentAmount} goalAmount={goalAmount} />
-            <DonationList donations={donations} />
+        <main className="max-w-7xl mx-auto p-5 flex flex-col h-[calc(100vh-128px-84px)]"> {/* Adjusted height calculation if needed */}
+          <div className="flex flex-grow mt-8 gap-6"> {/* Added gap */}
+            {/* QR Code Section with consistent styling */}
+            <div className="flex-1 flex flex-col mr-6 bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#4a2683]">
+              <QRCodeSection qrCodeUrl="https://www.kerkemst.nl/wp-content/uploads/2025/04/qr-actieavond-1.png" />
+            </div>
+
+            {/* Thermometer Display with consistent styling */}
+            <div className="flex-grow flex-2 flex flex-col items-center bg-white rounded-xl p-8 shadow-lg">
+              <ThermometerDisplay currentAmount={currentAmount} goalAmount={goalAmount} />
+            </div>
+
+            {/* Donation List with consistent styling */}
+            <div className="flex-1 flex flex-col ml-6 bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#f49b28]">
+              <DonationList donations={donations} />
+            </div>
           </div>
         </main>
 

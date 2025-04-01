@@ -13,59 +13,63 @@ const ThermometerDisplay = ({ currentAmount, goalAmount }) => {
   const marker1Amount = Math.round(goalAmount * 0.25).toLocaleString('nl-NL');
 
   return (
-    <div className="flex-grow flex-2 flex flex-col items-center">
+    // Removed outer div, styling is now handled in App.js
+    <>
+      <h2 className="text-3xl text-[#4a2683] pb-4 mt-0 mb-5 font-semibold text-center">Ons Doel</h2>
       {/* Total Amount Display */}
       <div
-        className={`text-6xl font-bold mb-2 text-center transition-transform duration-500 ease-in-out ${goalReached ? 'text-primary scale-110' : 'text-primary scale-100'}`}
+        className={`text-6xl font-bold mb-2 text-center transition-transform duration-500 ease-in-out ${goalReached ? 'text-[#4a2683] scale-110' : 'text-[#4a2683] scale-100'}`} // Use new primary color
       >
         €<span>{formattedCurrentAmount}</span>
       </div>
-      <div className="text-2xl mb-8 text-center text-text">
+      <div className="text-2xl mb-8 text-center text-text"> {/* Uses new text color from tailwind config */}
         Ons doel: €<span>{formattedGoalAmount}</span>
       </div>
 
       {/* Thermometer Visual */}
       <div className="relative w-64 h-[600px] mx-auto flex items-end justify-center">
-        <div className="thermometer bg-white shadow-soft rounded-t-full">
+        {/* Thermometer uses styles from index.css */}
+        <div className="thermometer">
           <div
-            className="thermometer-fill bg-primary rounded-t-full"
+            className="thermometer-fill" // Removed bg-primary and rounded-t-full, handled by CSS
             style={{ height: `${percentage}%` }}
           ></div>
         </div>
-        <div className="thermometer-bulb bg-primary border-4 border-white">
-          <div className="thermometer-shine"></div>
+        {/* Bulb uses styles from index.css */}
+        <div className="thermometer-bulb">
+          {/* Removed thermometer-shine div */}
         </div>
 
-        {/* Markers */}
+        {/* Markers with improved visualization */}
         <div className="absolute top-0 right-[-140px] h-[500px] flex flex-col justify-between py-2">
           {/* Top Marker (Goal) */}
           <div className="flex items-center">
-            <div className="w-12 h-0.5 bg-primary mr-2"></div>
-            <div className="text-xl font-bold text-text">€{formattedGoalAmount}</div>
+            <div className="w-12 h-1.5 bg-[#4a2683] mr-2 rounded-full"></div> {/* Updated style */}
+            <div className="text-xl font-bold text-[#4a2683]">€{formattedGoalAmount}</div> {/* Updated color */}
           </div>
           {/* 75% Marker */}
           <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-secondary mr-2"></div>
-            <div className="text-xl font-bold text-text">€{marker3Amount}</div>
+            <div className="w-8 h-1 bg-[#7440c4] mr-2 rounded-full"></div> {/* Updated style & color */}
+            <div className="text-lg font-medium text-text">€{marker3Amount}</div> {/* Updated style & color */}
           </div>
           {/* 50% Marker */}
-          <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-secondary mr-2"></div>
-            <div className="text-xl font-bold text-text">€{marker2Amount}</div>
+           <div className="flex items-center">
+            <div className="w-8 h-1 bg-[#7440c4] mr-2 rounded-full"></div> {/* Updated style & color */}
+            <div className="text-lg font-medium text-text">€{marker2Amount}</div> {/* Updated style & color */}
           </div>
           {/* 25% Marker */}
-          <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-secondary mr-2"></div>
-            <div className="text-xl font-bold text-text">€{marker1Amount}</div>
+           <div className="flex items-center">
+            <div className="w-8 h-1 bg-[#7440c4] mr-2 rounded-full"></div> {/* Updated style & color */}
+            <div className="text-lg font-medium text-text">€{marker1Amount}</div> {/* Updated style & color */}
           </div>
-          {/* 0% Marker */}
+          {/* 0% Marker - Reduced Emphasis */}
           <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-secondary mr-2"></div>
-            <div className="text-xl font-bold text-text">€0</div>
+            <div className="w-8 h-1 bg-[#cccccc] mr-2 rounded-full"></div> {/* Updated style & color */}
+            <div className="text-base text-gray-400">€0</div> {/* Updated style & color */}
           </div>
         </div>
       </div>
-    </div>
+    </> // Closing the React Fragment
   );
 };
 

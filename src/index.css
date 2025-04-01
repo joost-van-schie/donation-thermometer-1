@@ -5,62 +5,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 /* Custom thermometer styles */
+/* Updated thermometer styles */
 .thermometer {
-    width: 120px;
-    height: 500px;
-    border-radius: 60px 60px 0 0;
-    position: relative;
-    overflow: hidden;
-    border: 3px solid #fff;
-    border-bottom: none;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+  width: 120px;
+  height: 500px;
+  border-radius: 60px 60px 0 0;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #fff;
+  border-bottom: none;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+  background: #f5f5f5; /* Added background */
 }
 
-.thermometer::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #c74a4a; /* primary color */
-    transform: translateY(30px);
-    border-radius: 50% 50% 0 0;
-}
+/* Removed ::before pseudo-element as bulb handles the base */
 
 .thermometer-fill {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 0%;
-    background-color: #c74a4a; /* primary color */
-    transition: height 2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 1;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(to top, #4a2683, #7440c4); /* Updated gradient */
+  transition: height 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1;
 }
 
 .thermometer-bulb {
-    position: absolute;
-    bottom: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 120px;
-    background-color: #c74a4a; /* primary color */
-    border-radius: 50%;
-    z-index: 2;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle at 70% 30%, #7440c4, #4a2683); /* Updated gradient */
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.thermometer-shine {
-    position: absolute;
-    top: 25%;
-    left: 25%;
-    width: 20px;
-    height: 20px;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-}
+/* Removed thermometer-shine as it's not in the new design */
 
 /* Animation styles */
 @keyframes fadeIn {
@@ -96,7 +80,7 @@
     position: relative;
     overflow: hidden;
     transform-origin: top left;
-    background-color: #e9ecef; /* background color */
+    background-color: #f9f9f9; /* Updated background color */
 }
 
 .donation-item {
@@ -117,6 +101,6 @@ body, #root {
   padding: 0;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
-  background-color: #e9ecef; /* background color */
-  color: #6c757d; /* text color */
+  background-color: #f9f9f9; /* Updated background color */
+  color: #4a4a4a; /* Updated text color */
 }

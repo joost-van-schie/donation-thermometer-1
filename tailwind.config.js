@@ -7,10 +7,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#c74a4a',
-        secondary: '#dca8a8',
-        background: '#e9ecef',
-        text: '#6c757d',
+        primary: '#4a2683', // Woord & Daad purple
+        secondary: '#f49b28', // Woord & Daad orange/gold
+        accent: '#e17000', // Deeper orange for emphasis
+        background: '#f9f9f9', // Lighter background
+        text: '#4a4a4a', // Darker text for better readability
       },
       fontFamily: {
         sans: ['Montserrat', 'system-ui', 'sans-serif'],

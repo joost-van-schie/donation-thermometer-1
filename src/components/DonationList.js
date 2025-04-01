@@ -16,10 +16,6 @@ const DonationList = ({ donations, latestDonationId }) => ( // Added latestDonat
             key={donation.id} // Use donation.id as key
             className={`py-4 px-5 border-b border-background flex justify-between items-center ${styles.donationItem} group hover:bg-background/30 transition-colors rounded-lg my-1 ${donation.id === latestDonationId ? styles.newItemAnimation : ''}`} // Add animation class conditionally
           > {/* Uses new background color and CSS module */}
-            {/* Donation Info (Date/Time) */}
-            <div>
-              <div className="text-text text-lg">{donation.time}</div> {/* Show only time, make it larger */}
-            </div>
             {/* Donation Amount */}
             <div className="font-bold text-[#4a2683] text-2xl group-hover:scale-105 transition-transform"> {/* Updated text color */}
               €{donation.amount.toLocaleString('nl-NL')}

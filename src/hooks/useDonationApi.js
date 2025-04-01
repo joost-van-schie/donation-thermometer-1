@@ -49,12 +49,12 @@ export function useDonationApi({
           const amount = parseFloat(amountString);
           if (!isNaN(amount)) {
             totalApiAmount += amount;
-            const date = new Date(entry.date_created);
+            const date = new Date(entry.date_created); // Define date object here
             initialDonations.push({
               id: entry.id, // Store ID for key and tracking
               amount: amount,
-              date: date.toLocaleDateString('nl-NL'),
-              time: date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+              date: date.toLocaleDateString('nl-NL', { timeZone: 'Europe/Amsterdam' }), // Use defined date object and add timezone
+              time: date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Amsterdam' }) // Use defined date object and add timezone
             });
           }
         }
@@ -97,8 +97,8 @@ export function useDonationApi({
                         const date = new Date(entry.date_created);
                         addDonation(
                             amount,
-                            date.toLocaleDateString('nl-NL'),
-                            date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }),
+                            date.toLocaleDateString('nl-NL', { timeZone: 'Europe/Amsterdam' }),
+                            date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Amsterdam' }),
                             entry.id // Pass the entry ID
                         );
                     }
@@ -115,10 +115,7 @@ export function useDonationApi({
 
   // --- API Fetching Logic ---
   const fetchDonations = useCallback(async () => {
-    // Read URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const filterStatus = urlParams.get('status'); // e.g., 'paid'
-
+    // Removed URL parameter check for status, we will always filter by 'Paid'
     if (!apiConfig.baseUrl || !apiConfig.username || !apiConfig.apiKey || !apiConfig.formId) {
       console.error('API configuration incomplete');
       // displayApiStatus('API configuratie onvolledig.', 'error'); // Avoid showing error on auto-refresh
@@ -146,11 +143,9 @@ export function useDonationApi({
         console.log(`Adding search filter: id > ${lastFetchedEntry}`);
     }
 
-    // Add filter for payment status if URL parameter status=paid is present
-    if (filterStatus && filterStatus.toLowerCase() === 'paid') {
-        fieldFilters.push({ key: 'payment_status', value: 'Paid' });
-        console.log(`Adding search filter: payment_status = Paid (from URL param)`);
-    }
+    // Always add filter for payment status 'Paid'
+    fieldFilters.push({ key: 'payment_status', value: 'Paid' });
+    console.log(`Adding search filter: payment_status = Paid`);
 
     // Add field filters to search object if any exist
     if (fieldFilters.length > 0) {

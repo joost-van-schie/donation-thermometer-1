@@ -41,13 +41,12 @@ function App() {
  }, [triggerCelebration, setShowGoalReachedOverlay]);
 
  const addDonation = useCallback((amount, date = null, time = null, id = null) => { // Added id parameter
-    const now = new Date();
     const newDonation = {
       // Use passed ID if available (from API hook), otherwise generate one for manual adds/keys
       id: id ?? `donation-${Date.now()}-${Math.random().toString(36).substring(7)}`, // Use id parameter with nullish coalescing fallback
       amount: amount,
-      date: date || now.toLocaleDateString('nl-NL'),
-      time: time || now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+      date: date, // Use the date passed from the hook
+      time: time  // Use the time passed from the hook
     };
 
     // Update donations list
@@ -98,9 +97,10 @@ const handleInitialApiLoad = useCallback((initialAmount, initialDonations) => {
   setDonations(initialDonations);
   if (initialAmount >= goalAmount && !goalReached) {
     setGoalReached(true);
-    console.log("Goal reached on initial load.");
+    console.log("Goal reached on initial load, triggering celebration.");
+    celebrateGoalReached(); // Call the celebration function here too
   }
-}, [goalAmount, goalReached, setCurrentAmount, setDonations, setGoalReached]);
+}, [goalAmount, goalReached, setCurrentAmount, setDonations, setGoalReached, celebrateGoalReached]); // Add celebrateGoalReached to dependencies
 
 const {
   apiStatus,

@@ -17,7 +17,9 @@ function App() {
     goalAmount,
     refreshInterval,
     donationField,
-    updateConfig, // Function to update config state
+    cashAmount, // Get cashAmount
+    updateConfig,
+    setCashAmount, // Get setter for cashAmount
   } = useConfig();
 
   const [donations, setDonations] = useState([]);
@@ -61,13 +63,15 @@ function App() {
     // Update total amount using functional update
     let reachedGoalNow = false; // Flag to track if goal is reached in this update
     setCurrentAmount(prevCurrentAmount => {
+      // Calculate the new total including the donation amount
+      // The cashAmount is already part of prevCurrentAmount
       const newTotal = prevCurrentAmount + amount;
       // Check for goal reached *inside* the state updater
       if (!goalReached && prevCurrentAmount < goalAmount && newTotal >= goalAmount) {
         setGoalReached(true); // Update goalReached state
         reachedGoalNow = true; // Set flag
       }
-      return newTotal; // Return the new total
+      return newTotal; // Return the new total (API donation + previous total which includes cash)
     });
 
     // Set the ID of the newly added donation for animation trigger
@@ -92,15 +96,17 @@ function App() {
 
   }, [goalAmount, goalReached, celebrateGoalReached, createConfetti, setDonations, setCurrentAmount, setGoalReached, setShowPopup, setPopupMessage, setLatestDonationId]); // Dependencies include setLatestDonationId
 
-const handleInitialApiLoad = useCallback((initialAmount, initialDonations) => {
-  setCurrentAmount(initialAmount);
+const handleInitialApiLoad = useCallback((initialApiAmount, initialDonations) => {
+  // Set current amount to API amount + existing cash amount
+  setCurrentAmount(initialApiAmount + cashAmount);
   setDonations(initialDonations);
-  if (initialAmount >= goalAmount && !goalReached) {
+  // Check goal based on combined amount
+  if ((initialApiAmount + cashAmount) >= goalAmount && !goalReached) {
     setGoalReached(true);
-    console.log("Goal reached on initial load, triggering celebration.");
+    console.log("Goal reached on initial load (including cash), triggering celebration.");
     celebrateGoalReached(); // Call the celebration function here too
   }
-}, [goalAmount, goalReached, setCurrentAmount, setDonations, setGoalReached, celebrateGoalReached]); // Add celebrateGoalReached to dependencies
+}, [goalAmount, goalReached, cashAmount, setCurrentAmount, setDonations, setGoalReached, celebrateGoalReached]); // Add cashAmount and celebrateGoalReached to dependencies
 
 const {
   apiStatus,
@@ -118,12 +124,15 @@ const {
 });
 
   const handleReset = useCallback(() => {
-      setCurrentAmount(0);
-     setDonations([]);
-     setGoalReached(false);
-     resetApiState();
-     console.log("Thermometer reset.");
- }, [resetApiState, setCurrentAmount, setDonations, setGoalReached]);
+      setCurrentAmount(0); // Reset total amount
+      setDonations([]);
+      setGoalReached(false);
+      resetApiState();
+      setCashAmount(0); // Reset cash amount in config state
+      // Save the reset cash amount to localStorage via updateConfig
+      updateConfig({ cashAmount: 0 });
+      console.log("Thermometer reset, including cash amount.");
+  }, [resetApiState, setCashAmount, updateConfig, setCurrentAmount, setDonations, setGoalReached]); // Add setCashAmount and updateConfig
 
   const handleCloseOverlay = () => {
     setShowGoalReachedOverlay(false);
@@ -131,9 +140,29 @@ const {
 
 
   const handleSaveConfig = useCallback((newConfig) => {
-   updateConfig(newConfig);
-   console.log('Configuratie opgeslagen.');
- }, [updateConfig]);
+     // Update the main config state (including cashAmount)
+     updateConfig(newConfig);
+ 
+     // Recalculate currentAmount based on the *new* cashAmount and existing API donations
+     setCurrentAmount(prevCurrentAmount => {
+         // Calculate total from API donations only
+         const apiTotal = donations.reduce((sum, donation) => sum + donation.amount, 0);
+         // New total is API total + new cash amount
+         const newTotal = apiTotal + (newConfig.cashAmount || 0);
+ 
+         // Re-check goal reached status based on the new total
+         if (!goalReached && newTotal >= goalAmount) {
+             setGoalReached(true);
+             celebrateGoalReached(); // Celebrate if goal reached due to cash amount change
+         } else if (goalReached && newTotal < goalAmount) {
+             setGoalReached(false); // Reset goal reached if cash amount reduction drops below goal
+         }
+ 
+         return newTotal;
+     });
+ 
+     console.log('Configuratie opgeslagen, currentAmount bijgewerkt.');
+ }, [updateConfig, donations, goalAmount, goalReached, setGoalReached, celebrateGoalReached, setCurrentAmount]); // Add dependencies
 
 
  return (
@@ -191,6 +220,7 @@ const {
           initialGoalAmount={goalAmount}
           initialRefreshInterval={refreshInterval}
           initialDonationField={donationField}
+          initialCashAmount={cashAmount} // Pass initial cash amount
           onSaveConfig={handleSaveConfig}
          onTestConnection={handleTestConnection}
          onAddDonation={addDonation}

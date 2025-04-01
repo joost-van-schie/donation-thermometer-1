@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 const DEFAULT_GOAL = 4000;
 const DEFAULT_INTERVAL = 5;
 const DEFAULT_FIELD = '3';
+const DEFAULT_CASH_AMOUNT = 0;
 const DEFAULT_API_CONFIG = {
   baseUrl: 'https://www.kerkemst.nl/wp-json/gf/v2',
   formId: '7',
@@ -15,6 +16,7 @@ export function useConfig() {
   const [refreshInterval, setRefreshInterval] = useState(DEFAULT_INTERVAL); // seconds
   const [donationField, setDonationField] = useState(DEFAULT_FIELD);
   const [apiConfig, setApiConfig] = useState(DEFAULT_API_CONFIG);
+  const [cashAmount, setCashAmount] = useState(DEFAULT_CASH_AMOUNT);
 
   // Load config on mount
   useEffect(() => {
@@ -27,6 +29,7 @@ export function useConfig() {
         setGoalAmount(config.goalAmount || DEFAULT_GOAL);
         setRefreshInterval(config.refreshInterval || DEFAULT_INTERVAL);
         setDonationField(config.donationField || DEFAULT_FIELD);
+        setCashAmount(config.cashAmount || DEFAULT_CASH_AMOUNT); // Load cash amount
       } catch (error) {
         console.error('Error loading config:', error);
         // Optionally reset to defaults if loading fails
@@ -34,6 +37,7 @@ export function useConfig() {
         setGoalAmount(DEFAULT_GOAL);
         setRefreshInterval(DEFAULT_INTERVAL);
         setDonationField(DEFAULT_FIELD);
+        setCashAmount(DEFAULT_CASH_AMOUNT); // Reset cash amount on error
       }
     } else {
     }
@@ -47,11 +51,12 @@ export function useConfig() {
         apiConfig: configToSave.apiConfig !== undefined ? configToSave.apiConfig : apiConfig,
         goalAmount: configToSave.goalAmount !== undefined ? configToSave.goalAmount : goalAmount,
         refreshInterval: configToSave.refreshInterval !== undefined ? configToSave.refreshInterval : refreshInterval,
-        donationField: configToSave.donationField !== undefined ? configToSave.donationField : donationField
+        donationField: configToSave.donationField !== undefined ? configToSave.donationField : donationField,
+        cashAmount: configToSave.cashAmount !== undefined ? configToSave.cashAmount : cashAmount // Save cash amount
     };
     localStorage.setItem('donationThermometerConfig', JSON.stringify(fullConfig));
     console.log('useConfig: Saved to localStorage:', fullConfig); // Add log for confirmation
-  }, [apiConfig, goalAmount, refreshInterval, donationField]); // Dependencies are the state values used for fallbacks
+  }, [apiConfig, goalAmount, refreshInterval, donationField, cashAmount]); // Add cashAmount to dependencies
 
   // Remove the useEffect that automatically saves on state change
   // useEffect(() => {
@@ -66,27 +71,30 @@ export function useConfig() {
     const updatedGoalAmount = newConfig.goalAmount !== undefined ? newConfig.goalAmount : goalAmount;
     const updatedRefreshInterval = newConfig.refreshInterval !== undefined ? newConfig.refreshInterval : refreshInterval;
     const updatedDonationField = newConfig.donationField !== undefined ? newConfig.donationField : donationField;
+    const updatedCashAmount = newConfig.cashAmount !== undefined ? newConfig.cashAmount : cashAmount; // Handle cash amount update
 
     setApiConfig(updatedApiConfig);
     setGoalAmount(updatedGoalAmount);
     setRefreshInterval(updatedRefreshInterval);
     setDonationField(updatedDonationField);
+    setCashAmount(updatedCashAmount); // Set cash amount state
 
     // Immediately save the new configuration object passed in
     saveConfigToLocalStorage(newConfig);
 
-  }, [apiConfig, goalAmount, refreshInterval, donationField]); // saveConfigToLocalStorage is now stable due to its own useCallback
+  }, [apiConfig, goalAmount, refreshInterval, donationField, cashAmount, saveConfigToLocalStorage]); // Add saveConfigToLocalStorage dependency
 
   return {
     apiConfig,
     goalAmount,
     refreshInterval,
     donationField,
-    updateConfig, // Provide a way to update the whole config object
-    // Individual setters might be needed if direct updates outside ConfigPanel are required
+    cashAmount, // Return cash amount
+    updateConfig,
     setApiConfig,
     setGoalAmount,
     setRefreshInterval,
     setDonationField,
+    setCashAmount, // Return setter for cash amount
   };
 }

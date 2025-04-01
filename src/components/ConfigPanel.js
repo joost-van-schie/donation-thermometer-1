@@ -6,6 +6,7 @@ const ConfigPanel = ({
   initialGoalAmount,
   initialRefreshInterval,
   initialDonationField,
+  initialCashAmount, // Add prop for initial cash amount
   onSaveConfig,
   onTestConnection,
   onAddDonation,
@@ -18,6 +19,7 @@ const ConfigPanel = ({
   const [goalAmount, setGoalAmount] = useState(initialGoalAmount);
   const [refreshInterval, setRefreshInterval] = useState(initialRefreshInterval);
   const [donationField, setDonationField] = useState(initialDonationField);
+  const [cashAmount, setCashAmount] = useState(initialCashAmount); // Add state for cash amount
   const [testDonationAmount, setTestDonationAmount] = useState(25);
 
   // Effect to synchronize internal state with props when they change
@@ -26,7 +28,8 @@ const ConfigPanel = ({
     setGoalAmount(initialGoalAmount);
     setRefreshInterval(initialRefreshInterval);
     setDonationField(initialDonationField);
-  }, [initialApiConfig, initialGoalAmount, initialRefreshInterval, initialDonationField]);
+    setCashAmount(initialCashAmount); // Sync cash amount state with prop
+  }, [initialApiConfig, initialGoalAmount, initialRefreshInterval, initialDonationField, initialCashAmount]); // Add initialCashAmount to dependencies
 
   const handleToggle = () => {
     setShowContent(prev => !prev);
@@ -45,7 +48,8 @@ const ConfigPanel = ({
       apiConfig,
       goalAmount,
       refreshInterval,
-      donationField
+      donationField,
+      cashAmount // Include cash amount in saved config
     });
   };
 
@@ -138,6 +142,16 @@ const ConfigPanel = ({
               placeholder="bijv. 3"
               value={donationField}
               onChange={(e) => setDonationField(e.target.value)} />
+          </div>
+          {/* Cash Amount Input */}
+          <div className="mb-0 col-span-2"> {/* Span across both columns */}
+            <label htmlFor="cash-amount-input" className="block mb-1 font-bold">Contant Geld Bedrag:</label>
+            <input
+              type="number" id="cash-amount-input" name="cashAmount"
+              className="w-full p-2 border border-gray-300 rounded text-base"
+              placeholder="bijv. 150"
+              value={cashAmount}
+              onChange={(e) => setCashAmount(parseInt(e.target.value, 10) || 0)} min="0" />
           </div>
           {/* Buttons spanning full width */}
           <div className="flex justify-between mt-5 col-span-2">

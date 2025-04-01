@@ -20,7 +20,7 @@ const Header = () => (
       {/* Event info with improved typography */}
       <div className="text-center md:text-right">
         <h1 className="text-3xl md:text-5xl font-bold mb-1 text-white drop-shadow-md tracking-wide">Actie-avond</h1>
-        <p className="text-xl md:text-2xl font-light text-[#f49b28]">5 april 2024</p>
+        <p className="text-xl md:text-2xl font-light text-[#f49b28]">5 april 2025</p>
       </div>
     </div>
 

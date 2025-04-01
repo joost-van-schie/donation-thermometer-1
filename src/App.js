@@ -19,7 +19,7 @@ function App() {
   const [refreshInterval, setRefreshInterval] = useState(60); // seconds
   const [donationField, setDonationField] = useState('3');
   const [apiConfig, setApiConfig] = useState({
-    baseUrl: '',
+    baseUrl: 'https://www.kerkemst.nl/wp-json/gf/v2',
     formId: '7',
     username: '',
     apiKey: '',
@@ -446,7 +446,7 @@ function App() {
         <main className="max-w-7xl mx-auto p-5 flex flex-col h-[calc(100vh-128px-84px)]"> {/* Adjusted height calculation if needed */}
           <div className="flex flex-grow mt-8 gap-6"> {/* Added gap */}
             {/* QR Code Section with consistent styling */}
-            <div className="flex-1 flex flex-col mr-6 bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#4a2683]">
+            <div className="flex-1 flex flex-col bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#4a2683]">
               <QRCodeSection qrCodeUrl="https://www.kerkemst.nl/wp-content/uploads/2025/04/qr-actieavond-1.png" />
             </div>
 
@@ -456,7 +456,7 @@ function App() {
             </div>
 
             {/* Donation List with consistent styling */}
-            <div className="flex-1 flex flex-col ml-6 bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#f49b28]">
+            <div className="flex-1 flex flex-col bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#f49b28]">
               <DonationList donations={donations} />
             </div>
           </div>

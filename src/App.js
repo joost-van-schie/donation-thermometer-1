@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 // Import Components
 import Header from './components/Header';
@@ -26,6 +26,7 @@ function App() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [showGoalReachedOverlay, setShowGoalReachedOverlay] = useState(false);
+  const [latestDonationId, setLatestDonationId] = useState(null); // Track the latest donation ID for animation
 
 
  const {
@@ -39,22 +40,43 @@ function App() {
    triggerCelebration(setShowGoalReachedOverlay);
  }, [triggerCelebration, setShowGoalReachedOverlay]);
 
-  const addDonation = useCallback((amount, date = null, time = null) => {
+ const addDonation = useCallback((amount, date = null, time = null, id = null) => { // Added id parameter
     const now = new Date();
     const newDonation = {
+      // Use passed ID if available (from API hook), otherwise generate one for manual adds/keys
+      id: id ?? `donation-${Date.now()}-${Math.random().toString(36).substring(7)}`, // Use id parameter with nullish coalescing fallback
       amount: amount,
       date: date || now.toLocaleDateString('nl-NL'),
       time: time || now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
     };
 
+    // Update donations list
     setDonations(prevDonations => {
       const updatedDonations = [newDonation, ...prevDonations];
-      return updatedDonations.slice(0, 8);
+      // Ensure API donations also get IDs if they don't have one from the hook
+      // Note: The API hook *should* be providing IDs now, but this is a fallback.
+      updatedDonations.forEach((d, i) => d.id = d.id || `donation-fallback-${i}`);
+      return updatedDonations.slice(0, 8); // Keep only the latest 8
     });
 
-    const previousAmount = currentAmount;
-    const newTotal = previousAmount + amount;
-    setCurrentAmount(newTotal);
+    // Update total amount using functional update
+    let reachedGoalNow = false; // Flag to track if goal is reached in this update
+    setCurrentAmount(prevCurrentAmount => {
+      const newTotal = prevCurrentAmount + amount;
+      // Check for goal reached *inside* the state updater
+      if (!goalReached && prevCurrentAmount < goalAmount && newTotal >= goalAmount) {
+        setGoalReached(true); // Update goalReached state
+        reachedGoalNow = true; // Set flag
+      }
+      return newTotal; // Return the new total
+    });
+
+    // Set the ID of the newly added donation for animation trigger
+    setLatestDonationId(newDonation.id);
+    // Optional: Clear the latest ID after a short delay so animation doesn't re-trigger on re-renders without new donations
+    // setTimeout(() => setLatestDonationId(null), 1000); // Adjust timing as needed
+
+    // Trigger UI effects *after* state updates are queued
 
     setPopupMessage(`Er is zojuist €${amount.toLocaleString('nl-NL')} gedoneerd!`);
     setShowPopup(true);
@@ -64,11 +86,12 @@ function App() {
       createConfetti(amount);
     }
 
-    if (!goalReached && previousAmount < goalAmount && newTotal >= goalAmount) {
-      setGoalReached(true);
+    // Trigger celebration only if the goal was reached in *this* update
+    if (reachedGoalNow) {
       celebrateGoalReached();
     }
-  }, [currentAmount, goalAmount, goalReached, celebrateGoalReached, createConfetti, setCurrentAmount, setDonations, setGoalReached, setShowPopup, setPopupMessage]);
+
+  }, [goalAmount, goalReached, celebrateGoalReached, createConfetti, setDonations, setCurrentAmount, setGoalReached, setShowPopup, setPopupMessage, setLatestDonationId]); // Dependencies include setLatestDonationId
 
 const handleInitialApiLoad = useCallback((initialAmount, initialDonations) => {
   setCurrentAmount(initialAmount);
@@ -136,7 +159,7 @@ const {
 
         <div
           id="donation-popup"
-          className={`fixed top-8 right-8 bg-white border-l-8 border-primary shadow-card p-5 rounded-lg z-10 transform transition-transform duration-500 flex items-center max-w-md ${showPopup ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`fixed bottom-8 left-8 bg-white border-l-8 border-primary shadow-card p-5 rounded-lg z-10 transform transition-all duration-500 flex items-center max-w-md ${showPopup ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}
         >
           <div className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center text-3xl mr-5 flex-shrink-0">€</div>
           <div className="flex-grow">
@@ -158,7 +181,7 @@ const {
             </div>
 
             <div className="flex-1 flex flex-col bg-white rounded-xl p-8 shadow-lg border-t-4 border-[#f49b28]">
-              <DonationList donations={donations} />
+              <DonationList donations={donations} latestDonationId={latestDonationId} />
             </div>
           </div>
         </main>

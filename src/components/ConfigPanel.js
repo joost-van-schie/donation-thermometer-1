@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ConfigPanel.module.css';
 
 const ConfigPanel = ({
@@ -20,13 +20,24 @@ const ConfigPanel = ({
   const [donationField, setDonationField] = useState(initialDonationField);
   const [testDonationAmount, setTestDonationAmount] = useState(25);
 
+  // Effect to synchronize internal state with props when they change
+  useEffect(() => {
+    setApiConfig(initialApiConfig);
+    setGoalAmount(initialGoalAmount);
+    setRefreshInterval(initialRefreshInterval);
+    setDonationField(initialDonationField);
+  }, [initialApiConfig, initialGoalAmount, initialRefreshInterval, initialDonationField]);
+
   const handleToggle = () => {
     setShowContent(prev => !prev);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setApiConfig(prev => ({ ...prev, [name]: value }));
+    console.log(`ConfigPanel handleInputChange: name='${name}', value='${value}'`); // Log input details
+    const newState = { ...apiConfig, [name]: value };
+    console.log(`ConfigPanel handleInputChange: Setting apiConfig state to:`, newState); // Log state being set
+    setApiConfig(newState);
   };
 
   const handleSave = () => {
@@ -56,91 +67,86 @@ const ConfigPanel = ({
 
       {/* Configuration Content */}
       <div
-        className={`absolute bottom-[70px] right-0 w-[500px] bg-white rounded-lg p-5 shadow-card transition-all duration-300 ${showContent ? `opacity-100 visible scale-100 ${styles.configContentShow}` : 'opacity-0 invisible scale-95'}`}
+        className={`absolute bottom-[70px] right-0 w-[600px] bg-white rounded-lg p-5 shadow-card transition-all duration-300 ${showContent ? `opacity-100 visible scale-100 ${styles.configContentShow}` : 'opacity-0 invisible scale-95'}`}
         aria-hidden={!showContent}
       >
         {/* API Configuration Section */}
-        <div className="bg-background border border-secondary rounded-lg p-6 mb-5 text-left shadow-sm">
-          <h3 className="text-2xl text-primary mt-0 mb-5 text-center font-semibold">Gravity Forms API Configuratie</h3>
-          <div className="mb-4">
+        {/* Apply grid layout here */}
+        <div className="bg-background border border-secondary rounded-lg p-6 mb-5 text-left shadow-sm grid grid-cols-2 gap-x-6 gap-y-4">
+          <h3 className="text-2xl text-primary mt-0 mb-5 text-center font-semibold col-span-2">Gravity Forms API Configuratie</h3>
+          {/* Column 1 */}
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="base-url" className="block mb-1 font-bold">WP API Basis URL:</label>
             <input
               type="text" id="base-url" name="baseUrl"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="bijv. https://uw-website.nl/wp-json/gf/v2"
               value={apiConfig.baseUrl}
-              onChange={handleInputChange}
-            />
+              onChange={handleInputChange} />
           </div>
-          <div className="mb-4">
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="form-id" className="block mb-1 font-bold">Formulier ID:</label>
             <input
               type="number" id="form-id" name="formId"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="bijv. 7"
               value={apiConfig.formId}
-              onChange={handleInputChange}
-            />
+              onChange={handleInputChange} />
           </div>
-          <div className="mb-4">
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="api-username" className="block mb-1 font-bold">API Gebruikersnaam:</label>
             <input
               type="text" id="api-username" name="username"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="Gebruikersnaam"
               value={apiConfig.username}
-              onChange={handleInputChange}
-            />
+              onChange={handleInputChange} />
           </div>
-          <div className="mb-4">
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="api-key" className="block mb-1 font-bold">API Sleutel:</label>
             <input
               type="password" id="api-key" name="apiKey"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="API Sleutel"
               value={apiConfig.apiKey}
-              onChange={handleInputChange}
-            />
+              onChange={handleInputChange} />
           </div>
-          <div className="mb-4">
+          {/* Column 2 */}
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="goal-amount-input" className="block mb-1 font-bold">Doelbedrag:</label>
             <input
               type="number" id="goal-amount-input" name="goalAmount"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="bijv. 4000"
               value={goalAmount}
-              onChange={(e) => setGoalAmount(parseInt(e.target.value, 10) || 0)}
-              min="0"
-            />
+              onChange={(e) => setGoalAmount(parseInt(e.target.value, 10) || 0)} min="0" />
           </div>
-          <div className="mb-4">
+          <div className="mb-0"> {/* Reduced bottom margin */}
             <label htmlFor="refresh-interval" className="block mb-1 font-bold">Verversingsinterval (sec):</label>
             <input
               type="number" id="refresh-interval" name="refreshInterval"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="bijv. 60"
               value={refreshInterval}
-              onChange={(e) => setRefreshInterval(parseInt(e.target.value, 10) || 10)}
-              min="10"
-            />
+              onChange={(e) => setRefreshInterval(parseInt(e.target.value, 10) || 10)} min="10" />
           </div>
-          <div className="mb-4">
+          <div className="mb-0 col-span-2"> {/* Span across both columns */}
             <label htmlFor="donation-field" className="block mb-1 font-bold">Donatiebedrag veldnummer:</label>
             <input
               type="text" id="donation-field" name="donationField"
               className="w-full p-2 border border-gray-300 rounded text-base"
               placeholder="bijv. 3"
               value={donationField}
-              onChange={(e) => setDonationField(e.target.value)}
-            />
+              onChange={(e) => setDonationField(e.target.value)} />
           </div>
-          <div className="flex justify-between mt-5">
+          {/* Buttons spanning full width */}
+          <div className="flex justify-between mt-5 col-span-2">
             <button onClick={handleSave} className="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-3 px-6 rounded-full cursor-pointer text-base font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Opslaan</button>
             <button onClick={() => onTestConnection(apiConfig)} className="bg-gradient-to-b from-primary to-primary/80 text-white border-none py-3 px-6 rounded-full cursor-pointer text-base font-bold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">Test Verbinding</button>
           </div>
-          {/* API Status Message */}
-          {apiStatus && apiStatus.message && (
-            <div className={`p-2 rounded mt-2 text-center font-bold
+          {/* API Status Message spanning full width */}
+          {apiStatus?.message && (
+            <div className={`p-2 rounded mt-2 text-center font-bold col-span-2
               ${apiStatus.status === 'connected' ? 'bg-green-100 text-green-800' : ''}
               ${apiStatus.status === 'error' ? 'bg-red-100 text-red-800' : ''}
               ${apiStatus.status === 'loading' ? 'bg-yellow-100 text-yellow-800' : ''}

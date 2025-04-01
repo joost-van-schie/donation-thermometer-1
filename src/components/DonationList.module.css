@@ -1,9 +1,33 @@
-/* Animation styles */
+/* Define the flash animation for new items */
+@keyframes flashBackground {
+  0% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+  50% {
+    background-color: rgba(244, 155, 40, 0.2); /* Light orange flash */
+    transform: scale(1.02); /* Slight scale up */
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+/* Class to apply the flash animation */
+.newItemAnimation {
+  animation: flashBackground 0.8s ease-out; /* Apply the flash animation */
+}
+
+/* Base style for donation items - no animation here */
+.donationItem {
+  /* Add any other base styles needed for items */
+  /* Example: transition: background-color 0.2s; */
+}
+
+/* Keep the old fadeIn keyframes if needed elsewhere, or remove if unused */
+/* We'll keep it for now in case it's used by other components */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-.donationItem { /* Renamed for CSS Modules convention */
-    animation: fadeIn 0.5s ease-in-out;
 }

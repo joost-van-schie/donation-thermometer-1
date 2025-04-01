@@ -23,10 +23,14 @@ export function useDonationApi({
   }, []);
 
   // --- Process API Donations ---
-  const processApiDonations = useCallback((entriesData) => {
+  const processApiDonations = useCallback((responseData) => {
+    // Gravity Forms API v2 returns an object with an 'entries' key
+    const entriesData = responseData?.entries;
+
+
     if (!Array.isArray(entriesData)) {
-      console.error('Invalid API response:', entriesData);
-      displayApiStatus('Ongeldige API response ontvangen.', 'error');
+      console.error('Invalid API response or missing "entries" array:', responseData);
+      displayApiStatus('Ongeldige API response of "entries" array ontbreekt.', 'error');
       return;
     }
 
@@ -39,7 +43,8 @@ export function useDonationApi({
       const initialDonations = [];
 
       entriesData.forEach(entry => {
-        if (entry[donationField]) {
+        // Only process entries with payment_status === 'Paid'
+        if (entry.payment_status === 'Paid' && entry[donationField]) {
           const amountString = String(entry[donationField]).replace(/[^\d,.-]/g, '').replace(',', '.');
           const amount = parseFloat(amountString);
           if (!isNaN(amount)) {
@@ -66,38 +71,45 @@ export function useDonationApi({
 
       // Note: Goal reached check on initial load is handled in App component after onInitialLoad updates state
 
-    } else if (entriesData.length > 0 && lastFetchedEntry !== null) {
-      // Find new entries (those with ID greater than lastFetchedEntry)
-      const newEntries = entriesData.filter(entry => entry.id > lastFetchedEntry);
+    // Subsequent fetches: API call should have filtered entries > lastFetchedEntry
+    } else if (lastFetchedEntry !== null) {
+        // The API call itself filtered using 'search', so entriesData contains ONLY new entries (if any)
+        console.log(`Processing response for donations newer than ID: ${lastFetchedEntry}`);
+        console.log('Received entry IDs:', entriesData.map(e => e.id)); // Should be empty or contain only new IDs
 
-      if (newEntries.length > 0) {
-        console.log(`Found ${newEntries.length} new donations`);
-        // Sort new entries by ID ascending to process them in order
-        newEntries.sort((a, b) => a.id - b.id);
+        if (entriesData.length > 0) {
+            console.log(`Found ${entriesData.length} new donations via API filter.`);
+            // Sort new entries by ID ascending to process them in chronological order
+            entriesData.sort((a, b) => a.id - b.id);
 
-        // Update lastFetchedEntry with the newest ID
-        setLastFetchedEntry(newEntries[newEntries.length - 1].id);
+            // Update lastFetchedEntry with the newest ID from this batch
+            const newestIdInBatch = entriesData[entriesData.length - 1].id;
+            console.log(`Updating lastFetchedEntry from ${lastFetchedEntry} to ${newestIdInBatch}`);
+            setLastFetchedEntry(newestIdInBatch);
 
-        // Process each new entry sequentially using the passed addDonation function
-        newEntries.forEach(entry => {
-          if (entry[donationField]) {
-            const amountString = String(entry[donationField]).replace(/[^\d,.-]/g, '').replace(',', '.');
-            const amount = parseFloat(amountString);
-            if (!isNaN(amount)) {
-              const date = new Date(entry.date_created);
-              addDonation(
-                amount,
-                date.toLocaleDateString('nl-NL'),
-                date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
-              );
-            }
-          }
-        });
-        displayApiStatus(`${newEntries.length} nieuwe donatie(s) verwerkt.`, 'connected');
-      } else {
-        console.log("No new donations found.");
-        // Optionally show a status like "Geen nieuwe donaties."
-      }
+            // Process each new entry sequentially using the passed addDonation function
+            entriesData.forEach(entry => {
+                // Only process entries with payment_status === 'Paid'
+                if (entry.payment_status === 'Paid' && entry[donationField]) {
+                    const amountString = String(entry[donationField]).replace(/[^\d,.-]/g, '').replace(',', '.');
+                    const amount = parseFloat(amountString);
+                    if (!isNaN(amount)) {
+                        const date = new Date(entry.date_created);
+                        addDonation(
+                            amount,
+                            date.toLocaleDateString('nl-NL'),
+                            date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }),
+                            entry.id // Pass the entry ID
+                        );
+                    }
+                }
+            });
+            displayApiStatus(`${entriesData.length} nieuwe donatie(s) verwerkt.`, 'connected');
+        } else {
+            console.log("No new donations found since last check.");
+            // Update status to show the fetch completed, even if no new donations
+            displayApiStatus('Geen nieuwe donaties gevonden.', 'connected');
+        }
     }
   }, [addDonation, donationField, lastFetchedEntry, displayApiStatus, onInitialLoad]); // Removed goalAmount, goalReached as they are handled in App
 
@@ -111,11 +123,29 @@ export function useDonationApi({
 
     displayApiStatus('Donaties ophalen...', 'loading');
     const auth = 'Basic ' + btoa(apiConfig.username + ':' + apiConfig.apiKey);
-    const searchParams = new URLSearchParams({
+    // Determine page size: large for initial load, smaller for subsequent checks
+    const isInitialLoad = lastFetchedEntry === null;
+    const pageSize = isInitialLoad ? 200 : 50; // Fetch more initially, then 50 for updates
+    console.log(`Fetching donations. Initial load: ${isInitialLoad}, Page size: ${pageSize}, Last fetched ID: ${lastFetchedEntry}`); // Added logging
+
+    const searchParamsObj = {
       'sorting[key]': 'id',
       'sorting[direction]': 'DESC',
-      'paging[page_size]': 20 // Fetch a reasonable number to check for new ones
-    });
+      'paging[page_size]': pageSize
+    };
+
+    // For subsequent fetches, only request entries newer than the last one we processed
+    if (!isInitialLoad && lastFetchedEntry) {
+        searchParamsObj.search = JSON.stringify({
+            field_filters: [
+                { key: 'id', operator: '>', value: lastFetchedEntry }
+            ]
+        });
+        // We might not need a large page size when filtering, but keep 50 just in case
+        // console.log(`Adding search filter: id > ${lastFetchedEntry}`);
+    }
+
+    const searchParams = new URLSearchParams(searchParamsObj);
 
     try {
       const response = await fetch(`${apiConfig.baseUrl}/forms/${apiConfig.formId}/entries?${searchParams.toString()}`, {
@@ -139,7 +169,7 @@ export function useDonationApi({
       console.error('API Fetch Error:', error);
       displayApiStatus(`Fout bij ophalen: ${error.message}`, 'error');
     }
-  }, [apiConfig, processApiDonations, displayApiStatus]); // Dependencies
+  }, [apiConfig, processApiDonations, displayApiStatus, lastFetchedEntry]); // Added lastFetchedEntry dependency
 
   // --- Start/Stop Fetching Timer ---
   useEffect(() => {
